@@ -211,7 +211,29 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .invest-prazo { font-size:14px; color:var(--muted); font-weight:300; letter-spacing:.04em; margin-bottom:18px; }
 .invest-avista { display:inline-flex; align-items:center; gap:7px; background:rgba(0,229,160,.08); border:1px solid rgba(0,229,160,.25); border-radius:100px; padding:8px 22px; font-size:12px; font-weight:600; color:var(--green); letter-spacing:.04em; }
 
-/* PDF overlay */
+/* ─── PRINT ─── */
+@media print {
+  @page { size: 1100px 720px landscape; margin: 0; }
+  body { background: #0d0f14 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #config-screen { display: none !important; }
+  #pdf-overlay { display: none !important; }
+  .pres-nav { display: none !important; }
+  #presentation-screen { display: block !important; }
+  .slide {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    width: 1100px !important;
+    height: 720px !important;
+    min-height: 720px !important;
+    max-height: 720px !important;
+    padding: 70px 52px 52px !important;
+    overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    animation: none !important;
+  }
+}
 #pdf-overlay { display:none; position:fixed; inset:0; z-index:999; background:rgba(13,15,20,.85); backdrop-filter:blur(6px); align-items:center; justify-content:center; flex-direction:column; gap:14px; }
 #pdf-overlay.show { display:flex; }
 .pdf-spinner { width:36px; height:36px; border-radius:50%; border:3px solid var(--border2); border-top-color:var(--green); animation:spin .7s linear infinite; }
@@ -629,77 +651,16 @@ function calcInercia() {
   }
 }
 
-async function downloadPDF() {
-  const overlay = document.getElementById('pdf-overlay');
-  overlay.classList.add('show');
-
-  const cliente  = document.getElementById('nav-client-name').textContent || 'proposta';
-  const allSlides = document.querySelectorAll('.slide');
-  const saved    = currentSlide;
-  const W = 1100, H = 720;
-
-  // Build a hidden print container with all slides stacked
-  const container = document.createElement('div');
-  container.style.cssText = `
-    position:fixed; left:-9999px; top:0;
-    width:${W}px; background:#0d0f14;
-    font-family:'Sora',sans-serif;
-  `;
-
-  allSlides.forEach((slide, i) => {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = `
-      width:${W}px; min-height:${H}px; height:${H}px;
-      overflow:hidden; position:relative;
-      display:flex; flex-direction:column; justify-content:center;
-      padding:70px 52px 52px;
-      background:#0d0f14;
-      page-break-after:always;
-    `;
-    wrapper.innerHTML = slide.innerHTML;
-    // Remove interactive elements that break layout
-    wrapper.querySelectorAll('input[type=range]').forEach(el => {
-      const span = document.createElement('span');
-      span.style.cssText = 'font-family:var(--mono);font-size:14px;font-weight:600;color:#e8ecf4;';
-      span.textContent = el.nextElementSibling ? el.nextElementSibling.textContent : '';
-      el.parentNode.replaceChild(span, el);
+function downloadPDF() {
+  // Garante que todos os slides ficam visíveis para impressão
+  document.querySelectorAll('.slide').forEach(s => s.classList.add('print-visible'));
+  window.print();
+  // Restaura após impressão
+  setTimeout(() => {
+    document.querySelectorAll('.slide').forEach((s, i) => {
+      s.classList.remove('print-visible');
     });
-    container.appendChild(wrapper);
-  });
-
-  document.body.appendChild(container);
-
-  // Wait for fonts/layout
-  await new Promise(r => setTimeout(r, 600));
-
-  try {
-    await html2pdf()
-      .set({
-        margin: 0,
-        filename: `BP_Proposta_${cliente.replace(/\s+/g,'_')}.pdf`,
-        image: { type: 'jpeg', quality: 0.92 },
-        html2canvas: {
-          scale: 1.5,
-          useCORS: true,
-          backgroundColor: '#0d0f14',
-          logging: false,
-          width: W,
-          windowWidth: W,
-        },
-        jsPDF: { unit: 'px', format: [W, H], orientation: 'landscape' },
-        pagebreak: { mode: ['css', 'legacy'] },
-      })
-      .from(container)
-      .save();
-  } finally {
-    document.body.removeChild(container);
-    // Restore slide state
-    allSlides.forEach((s, i) => {
-      if (i + 1 === saved) s.classList.add('active');
-      else s.classList.remove('active');
-    });
-    overlay.classList.remove('show');
-  }
+  }, 1000);
 }
 
 document.addEventListener('keydown', e => {
