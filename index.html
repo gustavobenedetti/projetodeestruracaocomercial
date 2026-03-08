@@ -629,48 +629,77 @@ function calcInercia() {
   }
 }
 
-function downloadPDF() {
+async function downloadPDF() {
   const overlay = document.getElementById('pdf-overlay');
   overlay.classList.add('show');
 
-  const cliente   = document.getElementById('nav-client-name').textContent || 'proposta';
-  const nav       = document.querySelector('.pres-nav');
+  const cliente  = document.getElementById('nav-client-name').textContent || 'proposta';
   const allSlides = document.querySelectorAll('.slide');
-  const saved     = currentSlide;
+  const saved    = currentSlide;
+  const W = 1100, H = 720;
 
-  nav.style.display = 'none';
-  allSlides.forEach(s => {
-    s.style.display        = 'flex';
-    s.style.minHeight      = '720px';
-    s.style.pageBreakAfter = 'always';
-    s.style.animation      = 'none';
+  // Build a hidden print container with all slides stacked
+  const container = document.createElement('div');
+  container.style.cssText = `
+    position:fixed; left:-9999px; top:0;
+    width:${W}px; background:#0d0f14;
+    font-family:'Sora',sans-serif;
+  `;
+
+  allSlides.forEach((slide, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `
+      width:${W}px; min-height:${H}px; height:${H}px;
+      overflow:hidden; position:relative;
+      display:flex; flex-direction:column; justify-content:center;
+      padding:70px 52px 52px;
+      background:#0d0f14;
+      page-break-after:always;
+    `;
+    wrapper.innerHTML = slide.innerHTML;
+    // Remove interactive elements that break layout
+    wrapper.querySelectorAll('input[type=range]').forEach(el => {
+      const span = document.createElement('span');
+      span.style.cssText = 'font-family:var(--mono);font-size:14px;font-weight:600;color:#e8ecf4;';
+      span.textContent = el.nextElementSibling ? el.nextElementSibling.textContent : '';
+      el.parentNode.replaceChild(span, el);
+    });
+    container.appendChild(wrapper);
   });
 
-  html2pdf()
-    .set({
-      margin: 0,
-      filename: `BP_Proposta_${cliente.replace(/\s+/g,'_')}.pdf`,
-      image:    { type:'jpeg', quality:0.95 },
-      html2canvas: { scale:1.6, useCORS:true, backgroundColor:'#0d0f14', logging:false },
-      jsPDF:    { unit:'px', format:[1100,720], orientation:'landscape' },
-      pagebreak:{ mode:['css','legacy'], after:'.slide' },
-    })
-    .from(document.getElementById('presentation-screen'))
-    .save()
-    .then(() => {
-      nav.style.display = 'flex';
-      allSlides.forEach(s => {
-        s.style.display        = '';
-        s.style.minHeight      = '';
-        s.style.pageBreakAfter = '';
-        s.style.animation      = '';
-      });
-      document.querySelectorAll('.slide').forEach((s,i) => {
-        if (i+1 === saved) s.classList.add('active');
-        else s.classList.remove('active');
-      });
-      overlay.classList.remove('show');
+  document.body.appendChild(container);
+
+  // Wait for fonts/layout
+  await new Promise(r => setTimeout(r, 600));
+
+  try {
+    await html2pdf()
+      .set({
+        margin: 0,
+        filename: `BP_Proposta_${cliente.replace(/\s+/g,'_')}.pdf`,
+        image: { type: 'jpeg', quality: 0.92 },
+        html2canvas: {
+          scale: 1.5,
+          useCORS: true,
+          backgroundColor: '#0d0f14',
+          logging: false,
+          width: W,
+          windowWidth: W,
+        },
+        jsPDF: { unit: 'px', format: [W, H], orientation: 'landscape' },
+        pagebreak: { mode: ['css', 'legacy'] },
+      })
+      .from(container)
+      .save();
+  } finally {
+    document.body.removeChild(container);
+    // Restore slide state
+    allSlides.forEach((s, i) => {
+      if (i + 1 === saved) s.classList.add('active');
+      else s.classList.remove('active');
     });
+    overlay.classList.remove('show');
+  }
 }
 
 document.addEventListener('keydown', e => {
