@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Branches Performance · R2</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d0f14; --surface: #13161d; --surface2: #1a1e28; --border: #252a38; --border2: #2e3548;
+  --orange: #F5680A; --orange-dim: rgba(245,104,10,0.10);
+  --red: #e53e3e; --red-dim: rgba(229,62,62,0.10);
+  --green: #00e5a0; --green-dim: rgba(0,229,160,0.08);
+  --blue: #4e7cff; --accent3: #ff6b35;
+  --text: #e8ecf4; --muted: #6b7592; --label: #9ba8c4;
+  --font: 'Sora', sans-serif; --mono: 'JetBrains Mono', monospace; --radius: 14px;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ─── CONFIG ─── */
+#config-screen { min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:52px 20px 60px; }
+.config-wrapper { max-width:740px; width:100%; animation:fadeUp .5s ease both; }
+.config-header { text-align:center; margin-bottom:38px; }
+.config-tag { display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--orange); text-transform:uppercase; background:var(--orange-dim); border:1px solid rgba(245,104,10,.25); padding:5px 14px; border-radius:100px; margin-bottom:14px; }
+.config-header h1 { font-size:30px; font-weight:800; letter-spacing:-.03em; margin-bottom:6px; }
+.config-header h1 span { color:var(--orange); }
+.config-header p { font-size:13px; color:var(--muted); font-weight:300; }
+
+.config-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:28px; margin-bottom:14px; position:relative; overflow:hidden; }
+.config-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),transparent); }
+.cfg-title { font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--orange); margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.cfg-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.field { display:flex; flex-direction:column; gap:6px; }
+.field label { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--label); }
+.field input { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 13px; font-family:var(--font); font-size:13px; color:var(--text); outline:none; transition:border-color .2s,box-shadow .2s; -moz-appearance:textfield; }
+.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button { -webkit-appearance:none; }
+.field input::placeholder { color:#363d52; }
+.field input:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
+
+.rtb { display:flex; gap:6px; margin-bottom:8px; }
+.rtb-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 14px; font-family:var(--font); font-size:12px; font-weight:700; color:var(--label); cursor:pointer; transition:all .15s; user-select:none; }
+.rtb-btn:hover { border-color:var(--orange); color:var(--orange); }
+.rich-editor { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:13px 15px; min-height:130px; font-family:var(--font); font-size:13px; color:var(--text); outline:none; line-height:1.75; transition:border-color .2s,box-shadow .2s; }
+.rich-editor:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
+.rich-editor b, .rich-editor strong { font-weight:700; color:var(--text); }
+.field-hint { font-size:11px; color:var(--muted); margin-top:5px; }
+
+.crono-cfg-list { display:flex; flex-direction:column; gap:10px; }
+.crono-cfg-block { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.crono-cfg-wlabel { font-family:var(--mono); font-size:10px; font-weight:600; color:var(--orange); letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px; }
+.crono-lines { display:flex; flex-direction:column; gap:7px; }
+.crono-line-row { display:flex; gap:6px; align-items:center; }
+.crono-line-input { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px 12px; font-family:var(--font); font-size:12px; color:var(--text); outline:none; transition:border-color .2s; }
+.crono-line-input::placeholder { color:#363d52; }
+.crono-line-input:focus { border-color:var(--orange); }
+.crono-bold-btn { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px 11px; font-family:var(--font); font-size:11px; font-weight:700; color:var(--label); cursor:pointer; transition:all .15s; white-space:nowrap; flex-shrink:0; }
+.crono-bold-btn.on { background:var(--orange); border-color:var(--orange); color:#fff; }
+.crono-bold-btn:hover:not(.on) { border-color:var(--orange); color:var(--orange); }
+.crono-rm-btn { background:transparent; border:1px solid var(--border); border-radius:6px; padding:6px 9px; font-size:13px; color:var(--muted); cursor:pointer; transition:all .15s; flex-shrink:0; }
+.crono-rm-btn:hover { border-color:var(--red); color:var(--red); }
+.btn-addline { background:transparent; border:1px dashed var(--border2); border-radius:6px; padding:7px 14px; font-family:var(--font); font-size:11px; font-weight:600; color:var(--muted); cursor:pointer; transition:all .2s; margin-top:6px; width:100%; }
+.btn-addline:hover { border-color:var(--orange); color:var(--orange); }
+
+.btn-launch { width:100%; background:var(--orange); color:#fff; border:none; border-radius:10px; padding:16px; font-family:var(--font); font-size:14px; font-weight:700; cursor:pointer; letter-spacing:.02em; transition:background .2s,transform .15s,box-shadow .2s; box-shadow:0 4px 24px rgba(245,104,10,.3); text-transform:uppercase; margin-top:6px; }
+.btn-launch:hover { background:#D95A08; transform:translateY(-1px); }
+
+/* ─── PRESENTATION ─── */
+#presentation-screen { display:none; min-height:100vh; background:var(--bg); }
+
+.pres-nav { position:fixed; top:0; left:0; right:0; z-index:200; background:rgba(13,15,20,.97); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); padding:0 28px; height:54px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.nav-brand { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.nav-logo { font-size:13px; font-weight:800; letter-spacing:-.02em; color:var(--text); }
+.nav-logo span { color:var(--orange); }
+.nav-sep { width:1px; height:14px; background:var(--border); }
+.nav-client { font-size:12px; color:var(--muted); font-weight:400; }
+.nav-controls { display:flex; align-items:center; gap:6px; }
+.nav-steps { display:flex; gap:3px; margin-right:8px; }
+.nav-step { width:22px; height:22px; border-radius:5px; border:1px solid var(--border); background:transparent; font-family:var(--mono); font-size:9px; color:var(--muted); cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; }
+.nav-step.active { background:var(--orange); border-color:var(--orange); color:#fff; }
+.nav-step.done { background:var(--surface2); border-color:var(--border2); color:var(--label); }
+.nav-btn { background:var(--surface2); border:1px solid var(--border); border-radius:7px; padding:6px 14px; font-family:var(--font); font-size:12px; font-weight:600; color:var(--label); cursor:pointer; transition:all .2s; }
+.nav-btn:hover { color:var(--text); border-color:var(--border2); }
+.nav-btn.primary { background:var(--orange); border-color:var(--orange); color:#fff; }
+.nav-btn.primary:hover { background:#D95A08; }
+.nav-btn.pdf:hover { border-color:var(--green); color:var(--green); }
+.nav-btn-edit { background:transparent; border:1px solid var(--border); border-radius:7px; padding:6px 11px; font-family:var(--font); font-size:11px; color:var(--muted); cursor:pointer; transition:all .2s; }
+.nav-btn-edit:hover { color:var(--text); border-color:var(--border2); }
+
+.slide { display:none; min-height:100vh; padding:90px 52px 64px; max-width:1100px; margin:0 auto; animation:slideIn .35s ease both; }
+.slide.active { display:flex; flex-direction:column; justify-content:center; }
+@keyframes slideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+.slide-header { margin-bottom:36px; }
+.slide-tag { font-family:var(--mono); font-size:10px; letter-spacing:.18em; color:var(--orange); text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:7px; }
+.slide-tag::before { content:'↗'; font-size:11px; }
+.slide-title { font-size:clamp(26px,4vw,44px); font-weight:800; letter-spacing:-.03em; line-height:1; color:var(--text); margin-bottom:5px; }
+.slide-title span { color:var(--orange); }
+.slide-subtitle { font-size:13px; color:var(--muted); font-weight:300; }
+
+/* SLIDE 1 — CAPA */
+.slide-capa { align-items:center; text-align:center; position:relative; }
+.slide-capa::before { content:''; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:700px; height:700px; background:radial-gradient(circle,rgba(245,104,10,.05) 0%,transparent 65%); pointer-events:none; }
+.capa-tag { display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--orange); text-transform:uppercase; background:var(--orange-dim); border:1px solid rgba(245,104,10,.25); padding:5px 16px; border-radius:100px; margin-bottom:22px; }
+.capa-title { font-size:clamp(36px,5.5vw,66px); font-weight:800; letter-spacing:-.04em; line-height:1.05; margin-bottom:10px; }
+.capa-title span { color:var(--orange); }
+.capa-client { font-size:17px; font-weight:300; color:var(--muted); margin-bottom:44px; }
+.capa-client strong { color:var(--label); font-weight:600; }
+.capa-stats { display:flex; gap:1px; justify-content:center; }
+.capa-stat { background:var(--surface); border:1px solid var(--border); padding:14px 26px; text-align:center; }
+.capa-stat:first-child { border-radius:12px 0 0 12px; }
+.capa-stat:last-child  { border-radius:0 12px 12px 0; border-left:none; }
+.capa-stat:not(:first-child):not(:last-child) { border-left:none; }
+.capa-stat-val { font-family:var(--mono); font-size:19px; font-weight:600; color:var(--orange); line-height:1; margin-bottom:4px; }
+.capa-stat-desc { font-size:10px; font-weight:500; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; }
+
+/* SLIDE 2 — SOBRE */
+.cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:11px; }
+.info-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; transition:transform .2s,border-color .2s; }
+.info-card:hover { transform:translateY(-2px); border-color:var(--border2); }
+.ic-icon { font-size:18px; margin-bottom:9px; }
+.ic-title { font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--label); margin-bottom:4px; }
+.ic-desc { font-size:12px; color:var(--muted); font-weight:300; line-height:1.5; }
+
+/* SLIDE 3 — ENTREGÁVEIS */
+.entregaveis-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:28px 32px; position:relative; overflow:hidden; font-size:14px; color:var(--label); line-height:1.9; font-weight:300; }
+.entregaveis-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),transparent); }
+.entregaveis-box b,.entregaveis-box strong { font-weight:700; color:var(--text); }
+
+/* SLIDE 4 — CRONOGRAMA */
+.crono-list { display:flex; flex-direction:column; gap:2px; }
+.crono-item { display:grid; grid-template-columns:140px 1fr; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; transition:border-color .2s; }
+.crono-item:hover { border-color:var(--border2); }
+.crono-week { background:var(--surface2); padding:14px 18px 14px 18px; border-right:1px solid var(--border); display:flex; align-items:flex-start; padding-top:16px; }
+.crono-week-lbl { font-family:var(--mono); font-size:10px; font-weight:600; color:var(--orange); letter-spacing:.08em; text-transform:uppercase; }
+.crono-body { padding:14px 24px; display:flex; flex-direction:column; gap:3px; justify-content:center; }
+.crono-line { font-size:13px; color:var(--label); font-weight:300; line-height:1.6; }
+.crono-line.bold { font-weight:700; color:var(--text); }
+
+/* SLIDE 5 — CUSTO DE INÉRCIA */
+.inercia-top-row { display:flex; align-items:flex-end; gap:16px; margin-bottom:24px; flex-wrap:wrap; }
+.inercia-fat-group { display:flex; flex-direction:column; gap:7px; }
+.inercia-fat-label { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--label); }
+.inercia-fat-wrap { position:relative; display:flex; align-items:center; }
+.inercia-prefix { position:absolute; left:13px; font-family:var(--mono); font-size:14px; color:var(--muted); pointer-events:none; }
+.inercia-fat-input { width:220px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:11px 12px 11px 36px; font-family:var(--mono); font-size:17px; font-weight:500; color:var(--text); outline:none; transition:border-color .2s,box-shadow .2s; -moz-appearance:textfield; }
+.inercia-fat-input::-webkit-outer-spin-button,.inercia-fat-input::-webkit-inner-spin-button { -webkit-appearance:none; }
+.inercia-fat-input:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
+
+/* Toggle mensal/anual */
+.fat-toggle { display:flex; gap:0; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:3px; }
+.fat-toggle-btn { padding:7px 16px; border-radius:5px; font-family:var(--font); font-size:12px; font-weight:600; cursor:pointer; border:none; background:transparent; color:var(--muted); transition:all .2s; }
+.fat-toggle-btn.active { background:var(--orange); color:#fff; box-shadow:0 2px 10px rgba(245,104,10,.3); }
+
+.pillar-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px; }
+.pillar-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:14px; transition:border-color .2s; }
+.pillar-card:hover { border-color:var(--border2); }
+.pillar-canais  { border-top:2px solid var(--accent3); }
+.pillar-processo{ border-top:2px solid var(--blue); }
+.pillar-oferta  { border-top:2px solid var(--green); }
+.pillar-header  { display:flex; align-items:flex-start; gap:9px; }
+.pillar-icon    { font-size:18px; flex-shrink:0; margin-top:1px; }
+.pillar-title   { font-size:13px; font-weight:600; line-height:1.2; }
+.pillar-sw      { display:flex; align-items:center; gap:10px; }
+.pillar-range   { flex:1; -webkit-appearance:none; height:4px; border-radius:100px; background:var(--border); outline:none; cursor:pointer; }
+.range-canais::-webkit-slider-thumb   { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:var(--accent3); cursor:pointer; box-shadow:0 0 0 3px rgba(255,107,53,.2); }
+.range-processo::-webkit-slider-thumb { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:var(--blue); cursor:pointer; box-shadow:0 0 0 3px rgba(78,124,255,.2); }
+.range-oferta::-webkit-slider-thumb   { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:var(--green); cursor:pointer; box-shadow:0 0 0 3px rgba(0,229,160,.2); }
+.pillar-pct { font-family:var(--mono); font-size:14px; font-weight:600; min-width:36px; text-align:right; color:var(--text); }
+
+.ir-ind-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; margin-bottom:14px; }
+.ir-ind { background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:13px 15px; }
+.ir-ind-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+.ir-ind-val { font-family:var(--mono); font-size:16px; font-weight:600; line-height:1; }
+
+.ir-combo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
+.ir-box { background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:17px; text-align:center; transition:transform .2s; }
+.ir-box:hover { transform:translateY(-2px); }
+.ir-box.hl-orange { border-color:rgba(245,104,10,.35); background:rgba(245,104,10,.05); }
+.ir-box.hl-green  { border-color:rgba(0,229,160,.3); background:rgba(0,229,160,.04); }
+.ir-lbl { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+.ir-val { font-family:var(--mono); font-size:20px; font-weight:600; color:var(--text); line-height:1; }
+.ir-val.c-orange { color:var(--orange); }
+.ir-val.c-green  { color:var(--green); }
+.ir-desc2 { font-size:10px; color:var(--muted); margin-top:4px; font-weight:300; }
+
+.inercia-insight { background:rgba(78,124,255,.07); border:1px solid rgba(78,124,255,.2); border-radius:9px; padding:14px 18px; font-size:13px; color:var(--label); line-height:1.6; margin-top:14px; }
+.inercia-insight strong { color:var(--text); }
+
+/* SLIDE 6 — ANCORAGEM */
+.ancora-equipe { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:22px; }
+.aql { background:var(--surface2); border:1px solid var(--border); border-radius:7px; padding:9px 13px; font-size:12px; color:var(--label); display:flex; align-items:center; gap:7px; }
+.aql-dot { width:5px; height:5px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+.ancora-cost-box { background:var(--surface); border:1px solid rgba(229,62,62,.3); border-radius:var(--radius); padding:30px 36px; position:relative; overflow:hidden; }
+.ancora-cost-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--red),transparent); }
+.ancora-cost-label { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.ancora-cost-value { font-family:var(--mono); font-size:56px; font-weight:700; color:var(--red); letter-spacing:-.04em; line-height:1; margin-bottom:10px; }
+.ancora-cost-desc { font-size:13px; color:var(--muted); font-weight:300; line-height:1.6; max-width:520px; }
+
+/* SLIDE 7 — INVESTIMENTO */
+.invest-center { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; gap:22px; }
+.invest-box { background:var(--surface); border:1px solid rgba(0,229,160,.3); border-radius:20px; padding:44px 72px; position:relative; overflow:hidden; }
+.invest-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--green); }
+.invest-label { font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.invest-value { font-family:var(--mono); font-size:clamp(52px,7vw,84px); font-weight:700; color:var(--green); letter-spacing:-.04em; line-height:1; margin-bottom:8px; }
+.invest-prazo { font-size:14px; color:var(--muted); font-weight:300; letter-spacing:.04em; margin-bottom:18px; }
+.invest-avista { display:inline-flex; align-items:center; gap:7px; background:rgba(0,229,160,.08); border:1px solid rgba(0,229,160,.25); border-radius:100px; padding:8px 22px; font-size:12px; font-weight:600; color:var(--green); letter-spacing:.04em; }
+
+/* PDF overlay */
+#pdf-overlay { display:none; position:fixed; inset:0; z-index:999; background:rgba(13,15,20,.85); backdrop-filter:blur(6px); align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+#pdf-overlay.show { display:flex; }
+.pdf-spinner { width:36px; height:36px; border-radius:50%; border:3px solid var(--border2); border-top-color:var(--green); animation:spin .7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.pdf-msg { font-size:14px; color:var(--label); }
+</style>
+</head>
+<body>
+
+<!-- CONFIG SCREEN -->
+<div id="config-screen">
+<div class="config-wrapper">
+  <div class="config-header">
+    <div class="config-tag">Branches Performance · R2</div>
+    <h1>Configurar <span>Proposta</span></h1>
+    <p>Preencha os dados antes da reunião e apresente ao vivo</p>
+  </div>
+
+  <div class="config-card">
+    <div class="cfg-title">Cliente:</div>
+    <div class="field-row">
+      <div class="field"><label>Nome da empresa / cliente</label><input type="text" id="cfg-cliente" placeholder="Ex: Curick Transportes"></div>
+      <div class="field"><label>Segmento</label><input type="text" id="cfg-segmento" placeholder="Ex: Transportadora, Imobiliária..."></div>
+    </div>
+  </div>
+
+  <div class="config-card">
+    <div class="cfg-title">Escopo de Entregáveis:</div>
+    <div class="rtb">
+      <button class="rtb-btn" onmousedown="event.preventDefault();execBold()"><b>N</b> &nbsp;Negrito</button>
+    </div>
+    <div class="rich-editor" id="cfg-entregaveis" contenteditable="true" spellcheck="false">• Diagnóstico completo da operação comercial
+• Implantação e configuração do CRM
+• Playbook comercial completo
+• Cadência de follow-up estruturada
+• Treinamento da equipe comercial
+• Dashboard de KPIs e métricas</div>
+    <div class="field-hint">Selecione o texto e clique em <b style="color:var(--orange)">N</b> para aplicar negrito</div>
+  </div>
+
+  <div class="config-card">
+    <div class="cfg-title">Cronograma:</div>
+    <div class="crono-cfg-list" id="crono-cfg"></div>
+  </div>
+
+  <div class="config-card">
+    <div class="cfg-title">Investimento:</div>
+    <div class="field-row">
+      <div class="field"><label>Valor do projeto (R$)</label><input type="number" id="cfg-valor" placeholder="Ex: 12000"></div>
+      <div class="field"><label>Duração do projeto (meses)</label><input type="number" id="cfg-prazo" placeholder="Ex: 3" min="1"></div>
+    </div>
+  </div>
+
+  <button class="btn-launch" onclick="launchPresentation()">Iniciar Apresentação →</button>
+</div>
+</div>
+
+<!-- PRESENTATION SCREEN -->
+<div id="presentation-screen">
+
+  <nav class="pres-nav">
+    <div class="nav-brand">
+      <div class="nav-logo">Branches <span>Performance</span></div>
+      <div class="nav-sep"></div>
+      <div class="nav-client" id="nav-client-name">—</div>
+    </div>
+    <div class="nav-controls">
+      <div class="nav-steps" id="nav-steps"></div>
+      <button class="nav-btn" onclick="prevSlide()">← Anterior</button>
+      <button class="nav-btn primary" onclick="nextSlide()">Próximo →</button>
+      <button class="nav-btn pdf" onclick="downloadPDF()">⬇ PDF</button>
+      <button class="nav-btn-edit" onclick="backToConfig()">✎ Editar</button>
+    </div>
+  </nav>
+
+  <!-- SLIDE 1 — CAPA -->
+  <div class="slide slide-capa active" id="slide-1">
+    <div class="capa-tag">Projeto de Estruturação Comercial</div>
+    <div class="capa-title">Estruturação Comercial de<br><span>Alta Performance.</span></div>
+    <div class="capa-client">Preparado para <strong id="s1-cliente">—</strong></div>
+    <div class="capa-stats">
+      <div class="capa-stat"><div class="capa-stat-val">+R$500M</div><div class="capa-stat-desc">Em negócios gerados</div></div>
+      <div class="capa-stat"><div class="capa-stat-val">+70</div><div class="capa-stat-desc">Empresas atendidas</div></div>
+      <div class="capa-stat"><div class="capa-stat-val">5 anos</div><div class="capa-stat-desc">De operação</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 — SOBRE -->
+  <div class="slide" id="slide-2">
+    <div class="slide-header">
+      <div class="slide-tag">Sobre o Projeto</div>
+      <div class="slide-title">O que vamos <span>construir:</span></div>
+      <div class="slide-subtitle">Um motor comercial projetado para gerar previsibilidade e escala</div>
+    </div>
+    <div class="cards-grid">
+      <div class="info-card"><div class="ic-icon">🎯</div><div class="ic-title">Geração de Demanda</div><div class="ic-desc">Canais de aquisição estruturados e previsíveis — sem depender de indicação</div></div>
+      <div class="info-card"><div class="ic-icon">⚙️</div><div class="ic-title">Processo Comercial</div><div class="ic-desc">Da prospecção ao fechamento — cada etapa definida, documentada e treinada</div></div>
+      <div class="info-card"><div class="ic-icon">📊</div><div class="ic-title">Previsibilidade</div><div class="ic-desc">Metas, KPIs e dashboards que mostram onde o dinheiro está sendo perdido</div></div>
+      <div class="info-card"><div class="ic-icon">🔁</div><div class="ic-title">Padronização</div><div class="ic-desc">Um modelo replicável — que funciona independente de quem está executando</div></div>
+      <div class="info-card"><div class="ic-icon">🔍</div><div class="ic-title">Auditoria</div><div class="ic-desc">Acompanhamento contínuo para garantir execução com precisão</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — ENTREGÁVEIS -->
+  <div class="slide" id="slide-3">
+    <div class="slide-header">
+      <div class="slide-tag">Escopo de Entregas</div>
+      <div class="slide-title">O que está <span>incluído:</span></div>
+      <div class="slide-subtitle">Tudo que será entregue ao longo do projeto</div>
+    </div>
+    <div class="entregaveis-box" id="s3-entregaveis">—</div>
+  </div>
+
+  <!-- SLIDE 4 — CRONOGRAMA -->
+  <div class="slide" id="slide-4">
+    <div class="slide-header">
+      <div class="slide-tag">Cronograma</div>
+      <div class="slide-title">Como vamos <span>executar:</span></div>
+      <div class="slide-subtitle">Semana a semana, do onboarding à escala</div>
+    </div>
+    <div class="crono-list" id="s4-crono"></div>
+  </div>
+
+  <!-- SLIDE 5 — CUSTO DE INÉRCIA -->
+  <div class="slide" id="slide-5">
+    <div class="slide-header">
+      <div class="slide-tag">Custo de Inércia</div>
+      <div class="slide-title">Quanto custa <span>não agir:</span></div>
+      <div class="slide-subtitle">Simule o impacto de melhorias nos três pilares comerciais</div>
+    </div>
+
+    <!-- Faturamento com toggle mensal/anual -->
+    <div class="inercia-top-row">
+      <div class="inercia-fat-group">
+        <div class="inercia-fat-label" id="fat-input-label">Faturamento médio mensal atual:</div>
+        <div class="inercia-fat-wrap">
+          <span class="inercia-prefix">R$</span>
+          <input class="inercia-fat-input" type="number" id="inercia-fat" value="150000" oninput="calcInercia()">
+        </div>
+      </div>
+      <div class="fat-toggle">
+        <button class="fat-toggle-btn active" id="btn-mensal" onclick="setFatMode('mensal')">Mensal</button>
+        <button class="fat-toggle-btn" id="btn-anual" onclick="setFatMode('anual')">Anual</button>
+      </div>
+    </div>
+
+    <div class="pillar-grid">
+      <div class="pillar-card pillar-canais">
+        <div class="pillar-header"><span class="pillar-icon">📢</span><div><div class="pillar-title">Canais de Aquisição</div></div></div>
+        <div class="pillar-sw">
+          <input type="range" class="pillar-range range-canais" id="sl-canais" min="0" max="100" value="0" oninput="updatePillar('canais',this.value)">
+          <span class="pillar-pct" id="pct-canais">0%</span>
+        </div>
+      </div>
+      <div class="pillar-card pillar-processo">
+        <div class="pillar-header"><span class="pillar-icon">⚙️</span><div><div class="pillar-title">Processo Comercial</div></div></div>
+        <div class="pillar-sw">
+          <input type="range" class="pillar-range range-processo" id="sl-processo" min="0" max="100" value="0" oninput="updatePillar('processo',this.value)">
+          <span class="pillar-pct" id="pct-processo">0%</span>
+        </div>
+      </div>
+      <div class="pillar-card pillar-oferta">
+        <div class="pillar-header"><span class="pillar-icon">💎</span><div><div class="pillar-title">Oferta</div></div></div>
+        <div class="pillar-sw">
+          <input type="range" class="pillar-range range-oferta" id="sl-oferta" min="0" max="100" value="0" oninput="updatePillar('oferta',this.value)">
+          <span class="pillar-pct" id="pct-oferta">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ir-ind-grid">
+      <div class="ir-ind"><div class="ir-ind-label">📢 Canais</div><div class="ir-ind-val" style="color:var(--accent3)" id="ganho-canais">R$ 0</div></div>
+      <div class="ir-ind"><div class="ir-ind-label">⚙️ Processo</div><div class="ir-ind-val" style="color:var(--blue)" id="ganho-processo">R$ 0</div></div>
+      <div class="ir-ind"><div class="ir-ind-label">💎 Oferta</div><div class="ir-ind-val" style="color:var(--green)" id="ganho-oferta">R$ 0</div></div>
+    </div>
+
+    <div class="ir-combo-grid">
+      <div class="ir-box hl-orange"><div class="ir-lbl">Faturamento projetado/mês</div><div class="ir-val c-orange" id="r-fat-novo">R$ 150.000</div><div class="ir-desc2">vs <span id="r-fat-atual">R$ 150.000</span> atual</div></div>
+      <div class="ir-box"><div class="ir-lbl">Crescimento total</div><div class="ir-val" id="r-pct">0%</div><div class="ir-desc2">Efeito multiplicativo dos pilares</div></div>
+      <div class="ir-box hl-green"><div class="ir-lbl">Custo de inércia anual</div><div class="ir-val c-green" id="r-anual">R$ 0</div><div class="ir-desc2">Deixado na mesa em 12 meses</div></div>
+    </div>
+
+    <div class="inercia-insight" id="inercia-insight">
+      💡 Ajuste os sliders acima para simular melhorias em cada pilar e ver o impacto no faturamento.
+    </div>
+  </div>
+
+  <!-- SLIDE 6 — ANCORAGEM -->
+  <div class="slide" id="slide-6">
+    <div class="slide-header">
+      <div class="slide-tag">Perspectiva de Investimento</div>
+      <div class="slide-title">O custo de montar <span>internamente:</span></div>
+      <div class="slide-subtitle">O que custaria ter essa estrutura dentro da sua empresa</div>
+    </div>
+    <div class="ancora-equipe">
+      <div class="aql"><div class="aql-dot"></div>Gestor Comercial</div>
+      <div class="aql"><div class="aql-dot"></div>Assistente Técnico</div>
+      <div class="aql"><div class="aql-dot"></div>Gestor de Tráfego</div>
+      <div class="aql"><div class="aql-dot"></div>Gestor de Automações</div>
+      <div class="aql"><div class="aql-dot"></div>Designer</div>
+      <div class="aql"><div class="aql-dot"></div>Coordenação e gestão</div>
+    </div>
+    <div class="ancora-cost-box">
+      <div class="ancora-cost-label">Custo operacional de equipe interna:</div>
+      <div class="ancora-cost-value">R$60.000</div>
+      <div class="ancora-cost-desc">Custo estimado para manter a equipe operacional durante 3 meses —<br>sem considerar encargos, ferramentas, onboarding e curva de aprendizado.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 — INVESTIMENTO -->
+  <div class="slide" id="slide-7">
+    <div class="slide-header">
+      <div class="slide-tag">Investimento</div>
+      <div class="slide-title">Seu <span>investimento:</span></div>
+    </div>
+    <div class="invest-center">
+      <div class="invest-box">
+        <div class="invest-label">Projeto de Estruturação Comercial — BP</div>
+        <div class="invest-value" id="s7-valor">R$—</div>
+        <div class="invest-prazo" id="s7-prazo">— meses</div>
+        <div class="invest-avista">✓ À vista ou parcelado no cartão + taxas</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PDF overlay -->
+<div id="pdf-overlay">
+  <div class="pdf-spinner"></div>
+  <div class="pdf-msg">Gerando PDF, aguarde…</div>
+</div>
+
+<script>
+let currentSlide = 1;
+const TOTAL = 7;
+const pilares = { canais:0, processo:0, oferta:0 };
+let fatMode = 'mensal'; // 'mensal' ou 'anual'
+
+const weekDefs = [
+  {id:'w1',label:'Semana 01'},
+  {id:'w2',label:'Semana 02'},
+  {id:'w3',label:'Semana 03'},
+  {id:'w4',label:'Semana 04'},
+  {id:'w5',label:'Semanas Seguintes'},
+];
+
+function buildCronoConfig() {
+  const c = document.getElementById('crono-cfg');
+  c.innerHTML = '';
+  weekDefs.forEach(w => {
+    const block = document.createElement('div');
+    block.className = 'crono-cfg-block';
+    block.innerHTML = `
+      <div class="crono-cfg-wlabel">${w.label}:</div>
+      <div class="crono-lines" id="lines-${w.id}"></div>
+      <button class="btn-addline" onclick="addLine('${w.id}')">+ Adicionar linha</button>
+    `;
+    c.appendChild(block);
+    addLine(w.id);
+  });
+}
+
+function addLine(wid) {
+  const cont = document.getElementById('lines-' + wid);
+  const row = document.createElement('div');
+  row.className = 'crono-line-row';
+  row.innerHTML = `
+    <input class="crono-line-input" type="text" placeholder="Atividade...">
+    <button class="crono-bold-btn" onclick="toggleLineBold(this)" title="Negrito">N</button>
+    <button class="crono-rm-btn" onclick="removeLine(this)" title="Remover">✕</button>
+  `;
+  cont.appendChild(row);
+}
+
+function removeLine(btn) {
+  const row  = btn.closest('.crono-line-row');
+  const cont = row.parentElement;
+  if (cont.querySelectorAll('.crono-line-row').length > 1) row.remove();
+  else row.querySelector('input').value = '';
+}
+
+function toggleLineBold(btn) { btn.classList.toggle('on'); }
+
+function execBold() {
+  document.getElementById('cfg-entregaveis').focus();
+  document.execCommand('bold', false, null);
+}
+
+function fmt(n) {
+  if (n === undefined || isNaN(n)) return '—';
+  if (n >= 1e6) return 'R$ ' + (n/1e6).toFixed(2).replace('.',',') + ' M';
+  return 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+}
+
+function setFatMode(mode) {
+  fatMode = mode;
+  document.getElementById('btn-mensal').classList.toggle('active', mode === 'mensal');
+  document.getElementById('btn-anual').classList.toggle('active',  mode === 'anual');
+  document.getElementById('fat-input-label').textContent =
+    mode === 'mensal' ? 'Faturamento médio mensal atual:' : 'Faturamento médio anual atual:';
+  calcInercia();
+}
+
+function launchPresentation() {
+  const cliente = document.getElementById('cfg-cliente').value.trim() || 'Cliente';
+  const valor   = parseFloat(document.getElementById('cfg-valor').value) || 0;
+  const prazo   = parseInt(document.getElementById('cfg-prazo').value)   || 0;
+
+  document.getElementById('nav-client-name').textContent = cliente;
+  document.getElementById('s1-cliente').textContent      = cliente;
+
+  document.getElementById('s3-entregaveis').innerHTML =
+    document.getElementById('cfg-entregaveis').innerHTML || '—';
+
+  const cronoEl = document.getElementById('s4-crono');
+  cronoEl.innerHTML = '';
+  weekDefs.forEach(w => {
+    const rows = document.querySelectorAll(`#lines-${w.id} .crono-line-row`);
+    const lines = [];
+    rows.forEach(row => {
+      const txt  = row.querySelector('input').value.trim();
+      const bold = row.querySelector('.crono-bold-btn').classList.contains('on');
+      if (txt) lines.push({txt, bold});
+    });
+    if (!lines.length) return;
+    const linesHTML = lines.map(l =>
+      `<span class="crono-line${l.bold?' bold':''}">${l.txt}</span>`
+    ).join('');
+    cronoEl.innerHTML += `
+      <div class="crono-item">
+        <div class="crono-week"><div class="crono-week-lbl">${w.label}</div></div>
+        <div class="crono-body">${linesHTML}</div>
+      </div>`;
+  });
+
+  document.getElementById('s7-valor').textContent = valor > 0 ? fmt(valor) : '—';
+  document.getElementById('s7-prazo').textContent = prazo > 0 ? prazo + ' meses' : '—';
+
+  document.getElementById('nav-steps').innerHTML =
+    Array.from({length:TOTAL}, (_,i) =>
+      `<div class="nav-step ${i===0?'active':''}" onclick="goTo(${i+1})">${i+1}</div>`
+    ).join('');
+
+  calcInercia();
+
+  document.getElementById('config-screen').style.display       = 'none';
+  document.getElementById('presentation-screen').style.display = 'block';
+  currentSlide = 1;
+  window.scrollTo(0,0);
+}
+
+function goTo(n) {
+  document.getElementById('slide-'+currentSlide).classList.remove('active');
+  currentSlide = n;
+  document.getElementById('slide-'+currentSlide).classList.add('active');
+  updateSteps();
+  window.scrollTo(0,0);
+}
+function nextSlide() { if (currentSlide < TOTAL) goTo(currentSlide+1); }
+function prevSlide() { if (currentSlide > 1)     goTo(currentSlide-1); }
+
+function updateSteps() {
+  document.querySelectorAll('.nav-step').forEach((el,i) => {
+    el.classList.remove('active','done');
+    if (i+1 === currentSlide) el.classList.add('active');
+    else if (i+1 < currentSlide) el.classList.add('done');
+  });
+}
+
+function backToConfig() {
+  document.getElementById('presentation-screen').style.display = 'none';
+  document.getElementById('config-screen').style.display       = 'flex';
+}
+
+function updatePillar(p, v) {
+  pilares[p] = parseFloat(v) || 0;
+  document.getElementById('pct-'+p).textContent = v + '%';
+  calcInercia();
+}
+
+function calcInercia() {
+  const raw  = parseFloat(document.getElementById('inercia-fat').value) || 0;
+  // Normaliza para mensal independente do modo
+  const base = fatMode === 'anual' ? raw / 12 : raw;
+
+  const mC = 1 + pilares.canais   / 100;
+  const mP = 1 + pilares.processo / 100;
+  const mO = 1 + pilares.oferta   / 100;
+
+  document.getElementById('ganho-canais').textContent   = fmt(base*mC - base);
+  document.getElementById('ganho-processo').textContent = fmt(base*mP - base);
+  document.getElementById('ganho-oferta').textContent   = fmt(base*mO - base);
+
+  const fatNovo  = base * mC * mP * mO;
+  const ganhoMes = fatNovo - base;
+  const ganhoAno = ganhoMes * 12;
+  const pctTot   = ((mC*mP*mO - 1)*100).toFixed(1);
+
+  document.getElementById('r-fat-novo').textContent  = fmt(fatNovo);
+  document.getElementById('r-fat-atual').textContent = fmt(base);
+  document.getElementById('r-pct').textContent       = pctTot + '%';
+  document.getElementById('r-anual').textContent     = fmt(ganhoAno);
+
+  const ativos = [];
+  if (pilares.canais   > 0) ativos.push(`<strong>${pilares.canais}%</strong> em canais`);
+  if (pilares.processo > 0) ativos.push(`<strong>${pilares.processo}%</strong> em processo`);
+  if (pilares.oferta   > 0) ativos.push(`<strong>${pilares.oferta}%</strong> em oferta`);
+
+  const el = document.getElementById('inercia-insight');
+  if (!ativos.length) {
+    el.innerHTML = '💡 Ajuste os sliders acima para simular melhorias em cada pilar e ver o impacto no faturamento.';
+  } else {
+    el.innerHTML = `💡 <strong>Diagnóstico:</strong> Com melhorias de ${ativos.join(', ')}, o faturamento sairia de <strong>${fmt(base)}</strong> para <strong>${fmt(fatNovo)}/mês</strong> — um ganho de <strong>${fmt(ganhoMes)}/mês</strong> ou <strong>${fmt(ganhoAno)}/ano</strong>. O efeito combinado é multiplicativo: cada pilar potencializa o outro.`;
+  }
+}
+
+function downloadPDF() {
+  const overlay = document.getElementById('pdf-overlay');
+  overlay.classList.add('show');
+
+  const cliente   = document.getElementById('nav-client-name').textContent || 'proposta';
+  const nav       = document.querySelector('.pres-nav');
+  const allSlides = document.querySelectorAll('.slide');
+  const saved     = currentSlide;
+
+  nav.style.display = 'none';
+  allSlides.forEach(s => {
+    s.style.display        = 'flex';
+    s.style.minHeight      = '720px';
+    s.style.pageBreakAfter = 'always';
+    s.style.animation      = 'none';
+  });
+
+  html2pdf()
+    .set({
+      margin: 0,
+      filename: `BP_Proposta_${cliente.replace(/\s+/g,'_')}.pdf`,
+      image:    { type:'jpeg', quality:0.95 },
+      html2canvas: { scale:1.6, useCORS:true, backgroundColor:'#0d0f14', logging:false },
+      jsPDF:    { unit:'px', format:[1100,720], orientation:'landscape' },
+      pagebreak:{ mode:['css','legacy'], after:'.slide' },
+    })
+    .from(document.getElementById('presentation-screen'))
+    .save()
+    .then(() => {
+      nav.style.display = 'flex';
+      allSlides.forEach(s => {
+        s.style.display        = '';
+        s.style.minHeight      = '';
+        s.style.pageBreakAfter = '';
+        s.style.animation      = '';
+      });
+      document.querySelectorAll('.slide').forEach((s,i) => {
+        if (i+1 === saved) s.classList.add('active');
+        else s.classList.remove('active');
+      });
+      overlay.classList.remove('show');
+    });
+}
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('presentation-screen').style.display === 'none') return;
+  if (e.key==='ArrowRight'||e.key==='ArrowDown') nextSlide();
+  if (e.key==='ArrowLeft' ||e.key==='ArrowUp')   prevSlide();
+});
+
+buildCronoConfig();
+</script>
+</body>
+</html>
