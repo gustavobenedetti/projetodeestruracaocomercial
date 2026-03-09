@@ -825,10 +825,10 @@ async function downloadPDF() {
     });
     await new Promise(r => setTimeout(r, 120));
     const canvas = await html2canvas(slidesToExport[i], {
-      scale:1.5, useCORS:true, backgroundColor:'#0d0f14', logging:false,
+      scale:3, useCORS:true, backgroundColor:'#0d0f14', logging:false,
       width:W, height:H, windowWidth:W, windowHeight:H,
     });
-    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const imgData = canvas.toDataURL('image/jpeg', 0.97);
     if (i > 0) pdf.addPage([W,H], 'landscape');
     pdf.addImage(imgData, 'JPEG', 0, 0, W, H);
   }
