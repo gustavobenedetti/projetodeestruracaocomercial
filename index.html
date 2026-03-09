@@ -260,6 +260,18 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   <div class="config-card">
     <div class="cfg-title">Cronograma:</div>
+    <!-- Número de semanas + toggles de ativação -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
+      <div class="field" style="flex-shrink:0;width:180px;">
+        <label>Número de semanas</label>
+        <input type="number" id="cfg-num-semanas" value="4" min="1" max="8"
+          oninput="buildCronoConfig()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;-moz-appearance:textfield;">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--label);margin-bottom:8px;">Semanas com atividades:</div>
+        <div id="week-checkboxes" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+    </div>
     <div class="crono-cfg-list" id="crono-cfg"></div>
   </div>
 
@@ -507,13 +519,25 @@ const pilares    = { canais:0, processo:0, oferta:0 };
 let fatMode      = 'mensal';
 
 const TOGGLEABLE = [2,3,4,5,6]; // slides the user can toggle
-const weekDefs = [
+// 8 possible weeks — user controls how many and which are active
+const ALL_WEEKS = [
   {id:'w1',label:'Semana 01'},
   {id:'w2',label:'Semana 02'},
   {id:'w3',label:'Semana 03'},
   {id:'w4',label:'Semana 04'},
-  {id:'w5',label:'Semanas Seguintes'},
+  {id:'w5',label:'Semana 05'},
+  {id:'w6',label:'Semana 06'},
+  {id:'w7',label:'Semana 07'},
+  {id:'w8',label:'Semana 08'},
 ];
+function getActiveWeeks() {
+  const total = parseInt(document.getElementById('cfg-num-semanas').value) || 4;
+  const weeks = ALL_WEEKS.slice(0, total);
+  return weeks.filter(w => {
+    const cb = document.getElementById('wcb-' + w.id);
+    return cb ? cb.checked : true;
+  });
+}
 
 // ── TOGGLE PREVIEW: dim rows that are off, update badge numbers live ──
 function refreshToggles() {
@@ -533,9 +557,49 @@ function refreshToggles() {
 
 // ── CRONO CONFIG ──
 function buildCronoConfig() {
+  const total = parseInt(document.getElementById('cfg-num-semanas').value) || 4;
+  const clampedTotal = Math.min(Math.max(total, 1), 8);
+
+  // Rebuild checkboxes for active total
+  const cbCont = document.getElementById('week-checkboxes');
+  // Preserve existing checked states
+  const prevStates = {};
+  ALL_WEEKS.forEach(w => {
+    const cb = document.getElementById('wcb-' + w.id);
+    if (cb) prevStates[w.id] = cb.checked;
+  });
+  cbCont.innerHTML = '';
+  ALL_WEEKS.slice(0, clampedTotal).forEach(w => {
+    const wasChecked = prevStates[w.id] !== undefined ? prevStates[w.id] : true;
+    const label = document.createElement('label');
+    label.style.cssText = 'display:flex;align-items:center;gap:5px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:600;color:var(--label);transition:all .15s;user-select:none;';
+    label.innerHTML = `<input type="checkbox" id="wcb-${w.id}" ${wasChecked?'checked':''} onchange="buildCronoConfig()" style="accent-color:var(--orange);width:13px;height:13px;cursor:pointer;"> ${w.label.replace('Semana ','S')}`;
+    cbCont.appendChild(label);
+  });
+
+  // Rebuild content blocks only for checked weeks
   const c = document.getElementById('crono-cfg');
+  // Preserve existing line values
+  const savedLines = {};
+  ALL_WEEKS.forEach(w => {
+    const cont = document.getElementById('lines-' + w.id);
+    if (cont) {
+      savedLines[w.id] = [];
+      cont.querySelectorAll('.crono-line-row').forEach(row => {
+        savedLines[w.id].push({
+          txt: row.querySelector('input').value,
+          bold: row.querySelector('.crono-bold-btn').classList.contains('on')
+        });
+      });
+    }
+  });
+
   c.innerHTML = '';
-  weekDefs.forEach(w => {
+  const activeWeeks = ALL_WEEKS.slice(0, clampedTotal).filter(w => {
+    const cb = document.getElementById('wcb-' + w.id);
+    return cb ? cb.checked : true;
+  });
+  activeWeeks.forEach(w => {
     const block = document.createElement('div');
     block.className = 'crono-cfg-block';
     block.innerHTML = `
@@ -544,8 +608,24 @@ function buildCronoConfig() {
       <button class="btn-addline" onclick="addLine('${w.id}')">+ Adicionar linha</button>
     `;
     c.appendChild(block);
-    addLine(w.id);
+    // Restore saved lines or add empty
+    if (savedLines[w.id] && savedLines[w.id].some(l => l.txt)) {
+      savedLines[w.id].forEach(l => addLineWithValue(w.id, l.txt, l.bold));
+    } else {
+      addLine(w.id);
+    }
   });
+}
+function addLineWithValue(wid, txt, bold) {
+  const cont = document.getElementById('lines-' + wid);
+  const row  = document.createElement('div');
+  row.className = 'crono-line-row';
+  row.innerHTML = `
+    <input class="crono-line-input" type="text" value="${txt.replace(/"/g,'&quot;')}" placeholder="Atividade...">
+    <button class="crono-bold-btn${bold?' on':''}" onclick="toggleLineBold(this)" title="Negrito">N</button>
+    <button class="crono-rm-btn" onclick="removeLine(this)" title="Remover">✕</button>
+  `;
+  cont.appendChild(row);
 }
 function addLine(wid) {
   const cont = document.getElementById('lines-' + wid);
@@ -623,7 +703,7 @@ function launchPresentation() {
 
   const cronoEl = document.getElementById('s4-crono');
   cronoEl.innerHTML = '';
-  weekDefs.forEach(w => {
+  getActiveWeeks().forEach(w => {
     const rows = document.querySelectorAll(`#lines-${w.id} .crono-line-row`);
     const lines = [];
     rows.forEach(row => {
@@ -640,7 +720,7 @@ function launchPresentation() {
   });
 
   document.getElementById('s7-valor').textContent = valor > 0 ? fmt(valor) : '—';
-  document.getElementById('s7-prazo').textContent = prazo > 0 ? prazo + ' meses' : '—';
+  document.getElementById('s7-prazo').textContent = prazo > 0 ? prazo + (prazo === 1 ? ' mês' : ' meses') : '—';
 
   calcInercia();
 
@@ -774,7 +854,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ── INIT ──
-buildCronoConfig();
+buildCronoConfig(); // also builds checkboxes on first call
 refreshToggles();
 </script>
 </body>
