@@ -29,12 +29,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .config-header h1 { font-size:30px; font-weight:800; letter-spacing:-.03em; margin-bottom:6px; }
 .config-header h1 span { color:var(--orange); }
 .config-header p { font-size:13px; color:var(--muted); font-weight:300; }
-
 .config-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:28px; margin-bottom:14px; position:relative; overflow:hidden; }
 .config-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),transparent); }
 .cfg-title { font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--orange); margin-bottom:18px; display:flex; align-items:center; gap:8px; }
 .cfg-title::after { content:''; flex:1; height:1px; background:var(--border); }
-
 .field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
 .field { display:flex; flex-direction:column; gap:6px; }
 .field label { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--label); }
@@ -42,7 +40,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button { -webkit-appearance:none; }
 .field input::placeholder { color:#363d52; }
 .field input:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
-
 .rtb { display:flex; gap:6px; margin-bottom:8px; }
 .rtb-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 14px; font-family:var(--font); font-size:12px; font-weight:700; color:var(--label); cursor:pointer; transition:all .15s; user-select:none; }
 .rtb-btn:hover { border-color:var(--orange); color:var(--orange); }
@@ -50,7 +47,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .rich-editor:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
 .rich-editor b, .rich-editor strong { font-weight:700; color:var(--text); }
 .field-hint { font-size:11px; color:var(--muted); margin-top:5px; }
-
 .crono-cfg-list { display:flex; flex-direction:column; gap:10px; }
 .crono-cfg-block { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
 .crono-cfg-wlabel { font-family:var(--mono); font-size:10px; font-weight:600; color:var(--orange); letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px; }
@@ -66,13 +62,31 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .crono-rm-btn:hover { border-color:var(--red); color:var(--red); }
 .btn-addline { background:transparent; border:1px dashed var(--border2); border-radius:6px; padding:7px 14px; font-family:var(--font); font-size:11px; font-weight:600; color:var(--muted); cursor:pointer; transition:all .2s; margin-top:6px; width:100%; }
 .btn-addline:hover { border-color:var(--orange); color:var(--orange); }
-
 .btn-launch { width:100%; background:var(--orange); color:#fff; border:none; border-radius:10px; padding:16px; font-family:var(--font); font-size:14px; font-weight:700; cursor:pointer; letter-spacing:.02em; transition:background .2s,transform .15s,box-shadow .2s; box-shadow:0 4px 24px rgba(245,104,10,.3); text-transform:uppercase; margin-top:6px; }
 .btn-launch:hover { background:#D95A08; transform:translateY(-1px); }
 
+/* ─── SLIDE TOGGLES ─── */
+.slides-toggle-list { display:flex; flex-direction:column; gap:6px; }
+.stog-row { display:flex; align-items:center; justify-content:space-between; padding:11px 14px; border-radius:9px; border:1px solid var(--border); background:var(--surface2); transition:border-color .25s, opacity .25s; }
+.stog-row.locked { opacity:.55; }
+.stog-row.off    { opacity:.4; }
+.stog-left { display:flex; align-items:center; gap:10px; }
+.stog-num { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.06em; color:var(--orange); background:var(--orange-dim); border:1px solid rgba(245,104,10,.2); border-radius:5px; padding:3px 8px; min-width:28px; text-align:center; }
+.stog-num.dim { color:var(--muted); background:transparent; border-color:var(--border); }
+.stog-name { font-size:13px; font-weight:500; color:var(--label); }
+.stog-badge { font-size:10px; color:var(--muted); margin-left:4px; font-weight:400; }
+
+/* iOS toggle switch */
+.sw { position:relative; width:42px; height:24px; flex-shrink:0; }
+.sw input { opacity:0; width:0; height:0; position:absolute; }
+.sw-track { position:absolute; inset:0; background:var(--border2); border-radius:100px; cursor:pointer; transition:background .2s; }
+.sw-track::before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.sw input:checked + .sw-track { background:var(--orange); }
+.sw input:checked + .sw-track::before { transform:translateX(18px); }
+.sw input:disabled + .sw-track { cursor:default; opacity:.6; }
+
 /* ─── PRESENTATION ─── */
 #presentation-screen { display:none; min-height:100vh; background:var(--bg); }
-
 .pres-nav { position:fixed; top:0; left:0; right:0; z-index:200; background:rgba(13,15,20,.97); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); padding:0 28px; height:54px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .nav-brand { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .nav-logo { font-size:13px; font-weight:800; letter-spacing:-.02em; color:var(--text); }
@@ -91,12 +105,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .nav-btn.pdf:hover { border-color:var(--green); color:var(--green); }
 .nav-btn-edit { background:transparent; border:1px solid var(--border); border-radius:7px; padding:6px 11px; font-family:var(--font); font-size:11px; color:var(--muted); cursor:pointer; transition:all .2s; }
 .nav-btn-edit:hover { color:var(--text); border-color:var(--border2); }
-
 .slide { display:none; min-height:100vh; padding:90px 52px 64px; max-width:1100px; margin:0 auto; animation:slideIn .35s ease both; }
 .slide.active { display:flex; flex-direction:column; justify-content:center; }
 @keyframes slideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-
 .slide-header { margin-bottom:36px; }
 .slide-tag { font-family:var(--mono); font-size:10px; letter-spacing:.18em; color:var(--orange); text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:7px; }
 .slide-tag::before { content:'↗'; font-size:11px; }
@@ -104,7 +116,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .slide-title span { color:var(--orange); }
 .slide-subtitle { font-size:13px; color:var(--muted); font-weight:300; }
 
-/* SLIDE 1 — CAPA */
+/* SLIDE 1 */
 .slide-capa { align-items:center; text-align:center; position:relative; }
 .slide-capa::before { content:''; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:700px; height:700px; background:radial-gradient(circle,rgba(245,104,10,.05) 0%,transparent 65%); pointer-events:none; }
 .capa-tag { display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--orange); text-transform:uppercase; background:var(--orange-dim); border:1px solid rgba(245,104,10,.25); padding:5px 16px; border-radius:100px; margin-bottom:22px; }
@@ -120,7 +132,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .capa-stat-val { font-family:var(--mono); font-size:19px; font-weight:600; color:var(--orange); line-height:1; margin-bottom:4px; }
 .capa-stat-desc { font-size:10px; font-weight:500; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; }
 
-/* SLIDE 2 — SOBRE */
+/* SLIDE 2 */
 .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:11px; }
 .info-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; transition:transform .2s,border-color .2s; }
 .info-card:hover { transform:translateY(-2px); border-color:var(--border2); }
@@ -128,22 +140,22 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .ic-title { font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--label); margin-bottom:4px; }
 .ic-desc { font-size:12px; color:var(--muted); font-weight:300; line-height:1.5; }
 
-/* SLIDE 3 — ENTREGÁVEIS */
+/* SLIDE 3 */
 .entregaveis-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:28px 32px; position:relative; overflow:hidden; font-size:14px; color:var(--label); line-height:1.9; font-weight:300; }
 .entregaveis-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--orange),transparent); }
 .entregaveis-box b,.entregaveis-box strong { font-weight:700; color:var(--text); }
 
-/* SLIDE 4 — CRONOGRAMA */
+/* SLIDE 4 */
 .crono-list { display:flex; flex-direction:column; gap:2px; }
 .crono-item { display:grid; grid-template-columns:140px 1fr; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; transition:border-color .2s; }
 .crono-item:hover { border-color:var(--border2); }
-.crono-week { background:var(--surface2); padding:14px 18px 14px 18px; border-right:1px solid var(--border); display:flex; align-items:flex-start; padding-top:16px; }
+.crono-week { background:var(--surface2); padding:14px 18px; border-right:1px solid var(--border); display:flex; align-items:flex-start; padding-top:16px; }
 .crono-week-lbl { font-family:var(--mono); font-size:10px; font-weight:600; color:var(--orange); letter-spacing:.08em; text-transform:uppercase; }
 .crono-body { padding:14px 24px; display:flex; flex-direction:column; gap:3px; justify-content:center; }
 .crono-line { font-size:13px; color:var(--label); font-weight:300; line-height:1.6; }
 .crono-line.bold { font-weight:700; color:var(--text); }
 
-/* SLIDE 5 — CUSTO DE INÉRCIA */
+/* SLIDE 5 */
 .inercia-top-row { display:flex; align-items:flex-end; gap:16px; margin-bottom:24px; flex-wrap:wrap; }
 .inercia-fat-group { display:flex; flex-direction:column; gap:7px; }
 .inercia-fat-label { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--label); }
@@ -152,12 +164,9 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .inercia-fat-input { width:220px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:11px 12px 11px 36px; font-family:var(--mono); font-size:17px; font-weight:500; color:var(--text); outline:none; transition:border-color .2s,box-shadow .2s; -moz-appearance:textfield; }
 .inercia-fat-input::-webkit-outer-spin-button,.inercia-fat-input::-webkit-inner-spin-button { -webkit-appearance:none; }
 .inercia-fat-input:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
-
-/* Toggle mensal/anual */
-.fat-toggle { display:flex; gap:0; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:3px; }
+.fat-toggle { display:flex; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:3px; }
 .fat-toggle-btn { padding:7px 16px; border-radius:5px; font-family:var(--font); font-size:12px; font-weight:600; cursor:pointer; border:none; background:transparent; color:var(--muted); transition:all .2s; }
 .fat-toggle-btn.active { background:var(--orange); color:#fff; box-shadow:0 2px 10px rgba(245,104,10,.3); }
-
 .pillar-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px; }
 .pillar-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:14px; transition:border-color .2s; }
 .pillar-card:hover { border-color:var(--border2); }
@@ -173,12 +182,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .range-processo::-webkit-slider-thumb { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:var(--blue); cursor:pointer; box-shadow:0 0 0 3px rgba(78,124,255,.2); }
 .range-oferta::-webkit-slider-thumb   { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:var(--green); cursor:pointer; box-shadow:0 0 0 3px rgba(0,229,160,.2); }
 .pillar-pct { font-family:var(--mono); font-size:14px; font-weight:600; min-width:36px; text-align:right; color:var(--text); }
-
 .ir-ind-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; margin-bottom:14px; }
 .ir-ind { background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:13px 15px; }
 .ir-ind-label { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
 .ir-ind-val { font-family:var(--mono); font-size:16px; font-weight:600; line-height:1; }
-
 .ir-combo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
 .ir-box { background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:17px; text-align:center; transition:transform .2s; }
 .ir-box:hover { transform:translateY(-2px); }
@@ -189,11 +196,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .ir-val.c-orange { color:var(--orange); }
 .ir-val.c-green  { color:var(--green); }
 .ir-desc2 { font-size:10px; color:var(--muted); margin-top:4px; font-weight:300; }
-
 .inercia-insight { background:rgba(78,124,255,.07); border:1px solid rgba(78,124,255,.2); border-radius:9px; padding:14px 18px; font-size:13px; color:var(--label); line-height:1.6; margin-top:14px; }
 .inercia-insight strong { color:var(--text); }
 
-/* SLIDE 6 — ANCORAGEM */
+/* SLIDE 6 */
 .ancora-equipe { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:22px; }
 .aql { background:var(--surface2); border:1px solid var(--border); border-radius:7px; padding:9px 13px; font-size:12px; color:var(--label); display:flex; align-items:center; gap:7px; }
 .aql-dot { width:5px; height:5px; border-radius:50%; background:var(--muted); flex-shrink:0; }
@@ -203,7 +209,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .ancora-cost-value { font-family:var(--mono); font-size:56px; font-weight:700; color:var(--red); letter-spacing:-.04em; line-height:1; margin-bottom:10px; }
 .ancora-cost-desc { font-size:13px; color:var(--muted); font-weight:300; line-height:1.6; max-width:520px; }
 
-/* SLIDE 7 — INVESTIMENTO */
+/* SLIDE 7 */
 .invest-center { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; gap:22px; }
 .invest-box { background:var(--surface); border:1px solid rgba(0,229,160,.3); border-radius:20px; padding:44px 72px; position:relative; overflow:hidden; }
 .invest-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--green); }
@@ -211,7 +217,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .invest-value { font-family:var(--mono); font-size:clamp(52px,7vw,84px); font-weight:700; color:var(--green); letter-spacing:-.04em; line-height:1; margin-bottom:8px; }
 .invest-prazo { font-size:14px; color:var(--muted); font-weight:300; letter-spacing:.04em; margin-bottom:18px; }
 .invest-avista { display:inline-flex; align-items:center; gap:7px; background:rgba(0,229,160,.08); border:1px solid rgba(0,229,160,.25); border-radius:100px; padding:8px 22px; font-size:12px; font-weight:600; color:var(--green); letter-spacing:.04em; }
-
 
 #pdf-overlay { display:none; position:fixed; inset:0; z-index:999; background:rgba(13,15,20,.85); backdrop-filter:blur(6px); align-items:center; justify-content:center; flex-direction:column; gap:14px; }
 #pdf-overlay.show { display:flex; }
@@ -266,6 +271,72 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     </div>
   </div>
 
+  <!-- ── SLIDE VISIBILITY TOGGLES ── -->
+  <div class="config-card">
+    <div class="cfg-title">Slides da apresentação:</div>
+    <div class="slides-toggle-list">
+
+      <div class="stog-row locked">
+        <div class="stog-left">
+          <span class="stog-num dim">1</span>
+          <span class="stog-name">Capa</span>
+          <span class="stog-badge">— sempre exibido</span>
+        </div>
+        <label class="sw"><input type="checkbox" checked disabled><span class="sw-track"></span></label>
+      </div>
+
+      <div class="stog-row" id="tr-2">
+        <div class="stog-left">
+          <span class="stog-num" id="tn-2">2</span>
+          <span class="stog-name">O que vamos construir</span>
+        </div>
+        <label class="sw"><input type="checkbox" id="tog-2" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
+      </div>
+
+      <div class="stog-row" id="tr-3">
+        <div class="stog-left">
+          <span class="stog-num" id="tn-3">3</span>
+          <span class="stog-name">Entregáveis</span>
+        </div>
+        <label class="sw"><input type="checkbox" id="tog-3" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
+      </div>
+
+      <div class="stog-row" id="tr-4">
+        <div class="stog-left">
+          <span class="stog-num" id="tn-4">4</span>
+          <span class="stog-name">Cronograma</span>
+        </div>
+        <label class="sw"><input type="checkbox" id="tog-4" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
+      </div>
+
+      <div class="stog-row" id="tr-5">
+        <div class="stog-left">
+          <span class="stog-num" id="tn-5">5</span>
+          <span class="stog-name">Custo de Inércia</span>
+        </div>
+        <label class="sw"><input type="checkbox" id="tog-5" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
+      </div>
+
+      <div class="stog-row" id="tr-6">
+        <div class="stog-left">
+          <span class="stog-num" id="tn-6">6</span>
+          <span class="stog-name">Ancoragem de Investimento</span>
+        </div>
+        <label class="sw"><input type="checkbox" id="tog-6" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
+      </div>
+
+      <div class="stog-row locked">
+        <div class="stog-left">
+          <span class="stog-num dim" id="tn-7">7</span>
+          <span class="stog-name">Investimento</span>
+          <span class="stog-badge">— sempre exibido</span>
+        </div>
+        <label class="sw"><input type="checkbox" checked disabled><span class="sw-track"></span></label>
+      </div>
+
+    </div>
+  </div>
+
   <button class="btn-launch" onclick="launchPresentation()">Iniciar Apresentação →</button>
 </div>
 </div>
@@ -289,7 +360,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   </nav>
 
   <!-- SLIDE 1 — CAPA -->
-  <div class="slide slide-capa active" id="slide-1">
+  <div class="slide slide-capa" id="slide-1" data-sid="1">
     <div class="capa-tag">Projeto de Estruturação Comercial</div>
     <div class="capa-title">Estruturação Comercial de<br><span>Alta Performance.</span></div>
     <div class="capa-client">Preparado para <strong id="s1-cliente">—</strong></div>
@@ -301,7 +372,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   </div>
 
   <!-- SLIDE 2 — SOBRE -->
-  <div class="slide" id="slide-2">
+  <div class="slide" id="slide-2" data-sid="2">
     <div class="slide-header">
       <div class="slide-tag">Sobre o Projeto</div>
       <div class="slide-title">O que vamos <span>construir:</span></div>
@@ -317,7 +388,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   </div>
 
   <!-- SLIDE 3 — ENTREGÁVEIS -->
-  <div class="slide" id="slide-3">
+  <div class="slide" id="slide-3" data-sid="3">
     <div class="slide-header">
       <div class="slide-tag">Escopo de Entregas</div>
       <div class="slide-title">O que está <span>incluído:</span></div>
@@ -327,7 +398,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   </div>
 
   <!-- SLIDE 4 — CRONOGRAMA -->
-  <div class="slide" id="slide-4">
+  <div class="slide" id="slide-4" data-sid="4">
     <div class="slide-header">
       <div class="slide-tag">Cronograma</div>
       <div class="slide-title">Como vamos <span>executar:</span></div>
@@ -337,14 +408,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   </div>
 
   <!-- SLIDE 5 — CUSTO DE INÉRCIA -->
-  <div class="slide" id="slide-5">
+  <div class="slide" id="slide-5" data-sid="5">
     <div class="slide-header">
       <div class="slide-tag">Custo de Inércia</div>
       <div class="slide-title">Quanto custa <span>não agir:</span></div>
       <div class="slide-subtitle">Simule o impacto de melhorias nos três pilares comerciais</div>
     </div>
-
-    <!-- Faturamento com toggle mensal/anual -->
     <div class="inercia-top-row">
       <div class="inercia-fat-group">
         <div class="inercia-fat-label" id="fat-input-label">Faturamento médio mensal atual:</div>
@@ -358,50 +427,35 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
         <button class="fat-toggle-btn" id="btn-anual" onclick="setFatMode('anual')">Anual</button>
       </div>
     </div>
-
     <div class="pillar-grid">
       <div class="pillar-card pillar-canais">
         <div class="pillar-header"><span class="pillar-icon">📢</span><div><div class="pillar-title">Canais de Aquisição</div></div></div>
-        <div class="pillar-sw">
-          <input type="range" class="pillar-range range-canais" id="sl-canais" min="0" max="100" value="0" oninput="updatePillar('canais',this.value)">
-          <span class="pillar-pct" id="pct-canais">0%</span>
-        </div>
+        <div class="pillar-sw"><input type="range" class="pillar-range range-canais" id="sl-canais" min="0" max="100" value="0" oninput="updatePillar('canais',this.value)"><span class="pillar-pct" id="pct-canais">0%</span></div>
       </div>
       <div class="pillar-card pillar-processo">
         <div class="pillar-header"><span class="pillar-icon">⚙️</span><div><div class="pillar-title">Processo Comercial</div></div></div>
-        <div class="pillar-sw">
-          <input type="range" class="pillar-range range-processo" id="sl-processo" min="0" max="100" value="0" oninput="updatePillar('processo',this.value)">
-          <span class="pillar-pct" id="pct-processo">0%</span>
-        </div>
+        <div class="pillar-sw"><input type="range" class="pillar-range range-processo" id="sl-processo" min="0" max="100" value="0" oninput="updatePillar('processo',this.value)"><span class="pillar-pct" id="pct-processo">0%</span></div>
       </div>
       <div class="pillar-card pillar-oferta">
         <div class="pillar-header"><span class="pillar-icon">💎</span><div><div class="pillar-title">Oferta</div></div></div>
-        <div class="pillar-sw">
-          <input type="range" class="pillar-range range-oferta" id="sl-oferta" min="0" max="100" value="0" oninput="updatePillar('oferta',this.value)">
-          <span class="pillar-pct" id="pct-oferta">0%</span>
-        </div>
+        <div class="pillar-sw"><input type="range" class="pillar-range range-oferta" id="sl-oferta" min="0" max="100" value="0" oninput="updatePillar('oferta',this.value)"><span class="pillar-pct" id="pct-oferta">0%</span></div>
       </div>
     </div>
-
     <div class="ir-ind-grid">
       <div class="ir-ind"><div class="ir-ind-label">📢 Canais</div><div class="ir-ind-val" style="color:var(--accent3)" id="ganho-canais">R$ 0</div></div>
       <div class="ir-ind"><div class="ir-ind-label">⚙️ Processo</div><div class="ir-ind-val" style="color:var(--blue)" id="ganho-processo">R$ 0</div></div>
       <div class="ir-ind"><div class="ir-ind-label">💎 Oferta</div><div class="ir-ind-val" style="color:var(--green)" id="ganho-oferta">R$ 0</div></div>
     </div>
-
     <div class="ir-combo-grid">
       <div class="ir-box hl-orange"><div class="ir-lbl">Faturamento projetado/mês</div><div class="ir-val c-orange" id="r-fat-novo">R$ 150.000</div><div class="ir-desc2">vs <span id="r-fat-atual">R$ 150.000</span> atual</div></div>
       <div class="ir-box"><div class="ir-lbl">Crescimento total</div><div class="ir-val" id="r-pct">0%</div><div class="ir-desc2">Efeito multiplicativo dos pilares</div></div>
       <div class="ir-box hl-green"><div class="ir-lbl">Custo de inércia anual</div><div class="ir-val c-green" id="r-anual">R$ 0</div><div class="ir-desc2">Deixado na mesa em 12 meses</div></div>
     </div>
-
-    <div class="inercia-insight" id="inercia-insight">
-      💡 Ajuste os sliders acima para simular melhorias em cada pilar e ver o impacto no faturamento.
-    </div>
+    <div class="inercia-insight" id="inercia-insight">💡 Ajuste os sliders acima para simular melhorias em cada pilar e ver o impacto no faturamento.</div>
   </div>
 
   <!-- SLIDE 6 — ANCORAGEM -->
-  <div class="slide" id="slide-6">
+  <div class="slide" id="slide-6" data-sid="6">
     <div class="slide-header">
       <div class="slide-tag">Perspectiva de Investimento</div>
       <div class="slide-title">O custo de montar <span>internamente:</span></div>
@@ -423,7 +477,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   </div>
 
   <!-- SLIDE 7 — INVESTIMENTO -->
-  <div class="slide" id="slide-7">
+  <div class="slide" id="slide-7" data-sid="7">
     <div class="slide-header">
       <div class="slide-tag">Investimento</div>
       <div class="slide-title">Seu <span>investimento:</span></div>
@@ -440,18 +494,19 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
 </div>
 
-<!-- PDF overlay -->
 <div id="pdf-overlay">
   <div class="pdf-spinner"></div>
   <div class="pdf-msg">Gerando PDF, aguarde…</div>
 </div>
 
 <script>
-let currentSlide = 1;
-const TOTAL = 7;
-const pilares = { canais:0, processo:0, oferta:0 };
-let fatMode = 'mensal'; // 'mensal' ou 'anual'
+// ── STATE ──
+let activeSlides = []; // filled on launch
+let currentSid   = 1;
+const pilares    = { canais:0, processo:0, oferta:0 };
+let fatMode      = 'mensal';
 
+const TOGGLEABLE = [2,3,4,5,6]; // slides the user can toggle
 const weekDefs = [
   {id:'w1',label:'Semana 01'},
   {id:'w2',label:'Semana 02'},
@@ -460,6 +515,23 @@ const weekDefs = [
   {id:'w5',label:'Semanas Seguintes'},
 ];
 
+// ── TOGGLE PREVIEW: dim rows that are off, update badge numbers live ──
+function refreshToggles() {
+  let displayNum = 1; // Capa is always 1
+  TOGGLEABLE.forEach(sid => {
+    const on  = document.getElementById('tog-' + sid).checked;
+    const row = document.getElementById('tr-' + sid);
+    const num = document.getElementById('tn-' + sid);
+    row.classList.toggle('off', !on);
+    if (on) { displayNum++; num.textContent = displayNum; }
+    else    { num.textContent = '—'; }
+  });
+  // Investimento badge
+  displayNum++;
+  document.getElementById('tn-7').textContent = displayNum;
+}
+
+// ── CRONO CONFIG ──
 function buildCronoConfig() {
   const c = document.getElementById('crono-cfg');
   c.innerHTML = '';
@@ -475,58 +547,79 @@ function buildCronoConfig() {
     addLine(w.id);
   });
 }
-
 function addLine(wid) {
   const cont = document.getElementById('lines-' + wid);
-  const row = document.createElement('div');
+  const row  = document.createElement('div');
   row.className = 'crono-line-row';
   row.innerHTML = `
     <input class="crono-line-input" type="text" placeholder="Atividade...">
     <button class="crono-bold-btn" onclick="toggleLineBold(this)" title="Negrito">N</button>
-    <button class="crono-rm-btn" onclick="removeLine(this)" title="Remover">✕</button>
+    <button class="crono-rm-btn"   onclick="removeLine(this)"     title="Remover">✕</button>
   `;
   cont.appendChild(row);
 }
-
 function removeLine(btn) {
   const row  = btn.closest('.crono-line-row');
   const cont = row.parentElement;
   if (cont.querySelectorAll('.crono-line-row').length > 1) row.remove();
   else row.querySelector('input').value = '';
 }
-
 function toggleLineBold(btn) { btn.classList.toggle('on'); }
-
 function execBold() {
   document.getElementById('cfg-entregaveis').focus();
   document.execCommand('bold', false, null);
 }
 
+// ── FORMAT ──
 function fmt(n) {
   if (n === undefined || isNaN(n)) return '—';
   if (n >= 1e6) return 'R$ ' + (n/1e6).toFixed(2).replace('.',',') + ' M';
   return 'R$ ' + Math.round(n).toLocaleString('pt-BR');
 }
 
+// ── FAT MODE ──
 function setFatMode(mode) {
   fatMode = mode;
-  document.getElementById('btn-mensal').classList.toggle('active', mode === 'mensal');
-  document.getElementById('btn-anual').classList.toggle('active',  mode === 'anual');
+  document.getElementById('btn-mensal').classList.toggle('active', mode==='mensal');
+  document.getElementById('btn-anual').classList.toggle('active',  mode==='anual');
   document.getElementById('fat-input-label').textContent =
-    mode === 'mensal' ? 'Faturamento médio mensal atual:' : 'Faturamento médio anual atual:';
+    mode==='mensal' ? 'Faturamento médio mensal atual:' : 'Faturamento médio anual atual:';
   calcInercia();
 }
 
+// ── LAUNCH ──
 function launchPresentation() {
   const cliente = document.getElementById('cfg-cliente').value.trim() || 'Cliente';
   const valor   = parseFloat(document.getElementById('cfg-valor').value) || 0;
   const prazo   = parseInt(document.getElementById('cfg-prazo').value)   || 0;
 
+  // Build the active slide list from toggles
+  activeSlides = [1];
+  TOGGLEABLE.forEach(sid => {
+    if (document.getElementById('tog-' + sid).checked) activeSlides.push(sid);
+  });
+  activeSlides.push(7);
+
+  // Hide all slides; only show active ones
+  document.querySelectorAll('.slide').forEach(s => {
+    const sid = parseInt(s.dataset.sid);
+    s.classList.remove('active');
+    s.style.display = activeSlides.includes(sid) ? '' : 'none';
+  });
+
+  // Activate first slide
+  currentSid = 1;
+  document.getElementById('slide-1').classList.add('active');
+
+  // Nav steps — numbered 1..N for active slides
+  document.getElementById('nav-steps').innerHTML = activeSlides.map((sid, i) =>
+    `<div class="nav-step ${i===0?'active':''}" onclick="goToSid(${sid})">${i+1}</div>`
+  ).join('');
+
+  // Fill dynamic content
   document.getElementById('nav-client-name').textContent = cliente;
   document.getElementById('s1-cliente').textContent      = cliente;
-
-  document.getElementById('s3-entregaveis').innerHTML =
-    document.getElementById('cfg-entregaveis').innerHTML || '—';
+  document.getElementById('s3-entregaveis').innerHTML    = document.getElementById('cfg-entregaveis').innerHTML || '—';
 
   const cronoEl = document.getElementById('s4-crono');
   cronoEl.innerHTML = '';
@@ -536,50 +629,50 @@ function launchPresentation() {
     rows.forEach(row => {
       const txt  = row.querySelector('input').value.trim();
       const bold = row.querySelector('.crono-bold-btn').classList.contains('on');
-      if (txt) lines.push({txt, bold});
+      if (txt) lines.push({txt,bold});
     });
     if (!lines.length) return;
-    const linesHTML = lines.map(l =>
-      `<span class="crono-line${l.bold?' bold':''}">${l.txt}</span>`
-    ).join('');
     cronoEl.innerHTML += `
       <div class="crono-item">
         <div class="crono-week"><div class="crono-week-lbl">${w.label}</div></div>
-        <div class="crono-body">${linesHTML}</div>
+        <div class="crono-body">${lines.map(l=>`<span class="crono-line${l.bold?' bold':''}">${l.txt}</span>`).join('')}</div>
       </div>`;
   });
 
   document.getElementById('s7-valor').textContent = valor > 0 ? fmt(valor) : '—';
   document.getElementById('s7-prazo').textContent = prazo > 0 ? prazo + ' meses' : '—';
 
-  document.getElementById('nav-steps').innerHTML =
-    Array.from({length:TOTAL}, (_,i) =>
-      `<div class="nav-step ${i===0?'active':''}" onclick="goTo(${i+1})">${i+1}</div>`
-    ).join('');
-
   calcInercia();
 
   document.getElementById('config-screen').style.display       = 'none';
   document.getElementById('presentation-screen').style.display = 'block';
-  currentSlide = 1;
   window.scrollTo(0,0);
 }
 
-function goTo(n) {
-  document.getElementById('slide-'+currentSlide).classList.remove('active');
-  currentSlide = n;
-  document.getElementById('slide-'+currentSlide).classList.add('active');
+// ── NAVIGATION ──
+function goToSid(sid) {
+  document.getElementById('slide-' + currentSid).classList.remove('active');
+  currentSid = sid;
+  document.getElementById('slide-' + currentSid).classList.add('active');
   updateSteps();
   window.scrollTo(0,0);
 }
-function nextSlide() { if (currentSlide < TOTAL) goTo(currentSlide+1); }
-function prevSlide() { if (currentSlide > 1)     goTo(currentSlide-1); }
+
+function nextSlide() {
+  const idx = activeSlides.indexOf(currentSid);
+  if (idx < activeSlides.length - 1) goToSid(activeSlides[idx + 1]);
+}
+function prevSlide() {
+  const idx = activeSlides.indexOf(currentSid);
+  if (idx > 0) goToSid(activeSlides[idx - 1]);
+}
 
 function updateSteps() {
-  document.querySelectorAll('.nav-step').forEach((el,i) => {
+  const idx = activeSlides.indexOf(currentSid);
+  document.querySelectorAll('.nav-step').forEach((el, i) => {
     el.classList.remove('active','done');
-    if (i+1 === currentSlide) el.classList.add('active');
-    else if (i+1 < currentSlide) el.classList.add('done');
+    if (i === idx)    el.classList.add('active');
+    else if (i < idx) el.classList.add('done');
   });
 }
 
@@ -588,6 +681,7 @@ function backToConfig() {
   document.getElementById('config-screen').style.display       = 'flex';
 }
 
+// ── PILARES / CÁLCULO ──
 function updatePillar(p, v) {
   pilares[p] = parseFloat(v) || 0;
   document.getElementById('pct-'+p).textContent = v + '%';
@@ -596,32 +690,25 @@ function updatePillar(p, v) {
 
 function calcInercia() {
   const raw  = parseFloat(document.getElementById('inercia-fat').value) || 0;
-  // Normaliza para mensal independente do modo
   const base = fatMode === 'anual' ? raw / 12 : raw;
-
   const mC = 1 + pilares.canais   / 100;
   const mP = 1 + pilares.processo / 100;
   const mO = 1 + pilares.oferta   / 100;
-
   document.getElementById('ganho-canais').textContent   = fmt(base*mC - base);
   document.getElementById('ganho-processo').textContent = fmt(base*mP - base);
   document.getElementById('ganho-oferta').textContent   = fmt(base*mO - base);
-
   const fatNovo  = base * mC * mP * mO;
   const ganhoMes = fatNovo - base;
   const ganhoAno = ganhoMes * 12;
   const pctTot   = ((mC*mP*mO - 1)*100).toFixed(1);
-
   document.getElementById('r-fat-novo').textContent  = fmt(fatNovo);
   document.getElementById('r-fat-atual').textContent = fmt(base);
   document.getElementById('r-pct').textContent       = pctTot + '%';
   document.getElementById('r-anual').textContent     = fmt(ganhoAno);
-
   const ativos = [];
   if (pilares.canais   > 0) ativos.push(`<strong>${pilares.canais}%</strong> em canais`);
   if (pilares.processo > 0) ativos.push(`<strong>${pilares.processo}%</strong> em processo`);
   if (pilares.oferta   > 0) ativos.push(`<strong>${pilares.oferta}%</strong> em oferta`);
-
   const el = document.getElementById('inercia-insight');
   if (!ativos.length) {
     el.innerHTML = '💡 Ajuste os sliders acima para simular melhorias em cada pilar e ver o impacto no faturamento.';
@@ -630,74 +717,65 @@ function calcInercia() {
   }
 }
 
+// ── PDF ──
 async function downloadPDF() {
   const overlay = document.getElementById('pdf-overlay');
   overlay.classList.add('show');
-
   const { jsPDF } = window.jspdf;
   const W = 1100, H = 720;
-  const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [W, H], hotfixes: ['px_scaling'] });
-
-  const nav = document.querySelector('.pres-nav');
-  const allSlides = document.querySelectorAll('.slide');
-  const saved = currentSlide;
+  const pdf = new jsPDF({ orientation:'landscape', unit:'px', format:[W,H], hotfixes:['px_scaling'] });
+  const nav     = document.querySelector('.pres-nav');
   const cliente = document.getElementById('nav-client-name').textContent || 'proposta';
-
+  const savedSid = currentSid;
   nav.style.display = 'none';
 
-  // Show slides one at a time, capture each
-  for (let i = 0; i < allSlides.length; i++) {
-    // Make only this slide visible, full size
-    allSlides.forEach((s, j) => {
-      s.style.display   = j === i ? 'flex' : 'none';
-      s.style.flexDirection = 'column';
+  const slidesToExport = activeSlides.map(sid => document.getElementById('slide-' + sid));
+
+  for (let i = 0; i < slidesToExport.length; i++) {
+    slidesToExport.forEach((s, j) => {
+      s.style.display        = j === i ? 'flex' : 'none';
+      s.style.flexDirection  = 'column';
       s.style.justifyContent = 'center';
-      s.style.width     = W + 'px';
-      s.style.minHeight = H + 'px';
-      s.style.height    = H + 'px';
-      s.style.padding   = '70px 52px 52px';
-      s.style.animation = 'none';
-      s.style.overflow  = 'hidden';
+      s.style.width          = W + 'px';
+      s.style.minHeight      = H + 'px';
+      s.style.height         = H + 'px';
+      s.style.padding        = '70px 52px 52px';
+      s.style.animation      = 'none';
+      s.style.overflow       = 'hidden';
     });
-
-    // Small wait for render
     await new Promise(r => setTimeout(r, 120));
-
-    const canvas = await html2canvas(allSlides[i], {
-      scale: 1.5,
-      useCORS: true,
-      backgroundColor: '#0d0f14',
-      logging: false,
-      width: W,
-      height: H,
-      windowWidth: W,
-      windowHeight: H,
+    const canvas = await html2canvas(slidesToExport[i], {
+      scale:1.5, useCORS:true, backgroundColor:'#0d0f14', logging:false,
+      width:W, height:H, windowWidth:W, windowHeight:H,
     });
-
     const imgData = canvas.toDataURL('image/jpeg', 0.92);
-    if (i > 0) pdf.addPage([W, H], 'landscape');
+    if (i > 0) pdf.addPage([W,H], 'landscape');
     pdf.addImage(imgData, 'JPEG', 0, 0, W, H);
   }
 
   pdf.save(`BP_Proposta_${cliente.replace(/\s+/g,'_')}.pdf`);
 
-  // Restore
   nav.style.display = 'flex';
-  allSlides.forEach((s, i) => {
-    s.style.cssText = '';
-    if (i + 1 === saved) s.classList.add('active');
-    else s.classList.remove('active');
+  slidesToExport.forEach(s => { s.style.cssText = ''; });
+  // Restore visibility
+  document.querySelectorAll('.slide').forEach(s => {
+    const sid = parseInt(s.dataset.sid);
+    s.style.display = activeSlides.includes(sid) ? '' : 'none';
+    s.classList.toggle('active', sid === savedSid);
   });
   overlay.classList.remove('show');
 }
 
+// ── KEYBOARD ──
 document.addEventListener('keydown', e => {
   if (document.getElementById('presentation-screen').style.display === 'none') return;
   if (e.key==='ArrowRight'||e.key==='ArrowDown') nextSlide();
   if (e.key==='ArrowLeft' ||e.key==='ArrowUp')   prevSlide();
 });
 
+// ── INIT ──
 buildCronoConfig();
+refreshToggles();
 </script>
 </body>
 </html>
