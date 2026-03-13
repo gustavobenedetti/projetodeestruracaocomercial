@@ -40,9 +40,37 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button { -webkit-appearance:none; }
 .field input::placeholder { color:#363d52; }
 .field input:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
-.rtb { display:flex; gap:6px; margin-bottom:8px; }
+.rtb { display:flex; gap:6px; margin-bottom:8px; align-items:center; flex-wrap:wrap; }
 .rtb-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 14px; font-family:var(--font); font-size:12px; font-weight:700; color:var(--label); cursor:pointer; transition:all .15s; user-select:none; }
 .rtb-btn:hover { border-color:var(--orange); color:var(--orange); }
+
+/* ── Color picker button ── */
+.rtb-color-wrap { position:relative; display:flex; align-items:center; }
+.rtb-color-btn {
+  background:var(--surface2); border:1px solid var(--border); border-radius:6px;
+  padding:5px 10px; font-family:var(--font); font-size:12px; font-weight:700;
+  color:var(--label); cursor:pointer; transition:all .15s; user-select:none;
+  display:flex; align-items:center; gap:7px;
+}
+.rtb-color-btn:hover { border-color:var(--orange); color:var(--orange); }
+.color-swatch {
+  width:14px; height:14px; border-radius:3px; border:1px solid rgba(255,255,255,.15);
+  display:inline-block; transition:background .15s;
+}
+/* hidden native input overlaid on button */
+.rtb-color-input {
+  position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+  border:none; padding:0; margin:0;
+}
+
+/* Reset color button */
+.rtb-reset-btn {
+  background:var(--surface2); border:1px solid var(--border); border-radius:6px;
+  padding:5px 10px; font-family:var(--font); font-size:11px; font-weight:600;
+  color:var(--muted); cursor:pointer; transition:all .15s; user-select:none;
+}
+.rtb-reset-btn:hover { border-color:var(--red); color:var(--red); }
+
 .rich-editor { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:13px 15px; min-height:130px; font-family:var(--font); font-size:13px; color:var(--text); outline:none; line-height:1.75; transition:border-color .2s,box-shadow .2s; }
 .rich-editor:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
 .rich-editor b, .rich-editor strong { font-weight:700; color:var(--text); }
@@ -246,21 +274,45 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   <div class="config-card">
     <div class="cfg-title">Escopo de Entregáveis:</div>
+
+    <!-- ── TOOLBAR com cor de texto ── -->
     <div class="rtb">
       <button class="rtb-btn" onmousedown="event.preventDefault();execBold()"><b>N</b> &nbsp;Negrito</button>
+
+      <!-- Botão de cor -->
+      <div class="rtb-color-wrap" title="Cor do texto">
+        <button class="rtb-color-btn" onmousedown="event.preventDefault();">
+          <span style="font-size:12px;font-weight:700;">A</span>
+          <span class="color-swatch" id="color-swatch" style="background:#F5680A;"></span>
+          ▾
+        </button>
+        <!-- input nativo sobreposto, invisível -->
+        <input
+          type="color"
+          class="rtb-color-input"
+          id="color-picker"
+          value="#F5680A"
+          onchange="applyColor(this.value)"
+          oninput="updateSwatch(this.value)"
+          title="Escolher cor"
+        >
+      </div>
+
+      <!-- Resetar cor -->
+      <button class="rtb-reset-btn" onmousedown="event.preventDefault();resetColor()" title="Remover cor">✕ cor</button>
     </div>
+
     <div class="rich-editor" id="cfg-entregaveis" contenteditable="true" spellcheck="false">• Diagnóstico completo da operação comercial
 • Implantação e configuração do CRM
 • Playbook comercial completo
 • Cadência de follow-up estruturada
 • Treinamento da equipe comercial
 • Dashboard de KPIs e métricas</div>
-    <div class="field-hint">Selecione o texto e clique em <b style="color:var(--orange)">N</b> para aplicar negrito</div>
+    <div class="field-hint">Selecione o texto → <b style="color:var(--orange)">N</b> para negrito &nbsp;|&nbsp; <b style="color:var(--orange)">A▾</b> para cor &nbsp;|&nbsp; <b style="color:var(--muted)">✕ cor</b> para remover cor</div>
   </div>
 
   <div class="config-card">
     <div class="cfg-title">Cronograma:</div>
-    <!-- Número de semanas + toggles de ativação -->
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
       <div class="field" style="flex-shrink:0;width:180px;">
         <label>Número de semanas</label>
@@ -513,23 +565,77 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
 <script>
 // ── STATE ──
-let activeSlides = []; // filled on launch
+let activeSlides = [];
 let currentSid   = 1;
 const pilares    = { canais:0, processo:0, oferta:0 };
 let fatMode      = 'mensal';
+let savedSelection = null; // guarda a seleção antes de abrir o color picker
 
-const TOGGLEABLE = [2,3,4,5,6]; // slides the user can toggle
-// 8 possible weeks — user controls how many and which are active
+const TOGGLEABLE = [2,3,4,5,6];
 const ALL_WEEKS = [
-  {id:'w1',label:'Semana 01'},
-  {id:'w2',label:'Semana 02'},
-  {id:'w3',label:'Semana 03'},
-  {id:'w4',label:'Semana 04'},
-  {id:'w5',label:'Semana 05'},
-  {id:'w6',label:'Semana 06'},
-  {id:'w7',label:'Semana 07'},
-  {id:'w8',label:'Semana 08'},
+  {id:'w1',label:'Semana 01'},{id:'w2',label:'Semana 02'},{id:'w3',label:'Semana 03'},
+  {id:'w4',label:'Semana 04'},{id:'w5',label:'Semana 05'},{id:'w6',label:'Semana 06'},
+  {id:'w7',label:'Semana 07'},{id:'w8',label:'Semana 08'},
 ];
+
+// ── SALVAR E RESTAURAR SELEÇÃO ──
+// O color picker nativo causa blur no editor — salvamos a seleção antes de abrir
+document.getElementById('color-picker').addEventListener('mousedown', () => {
+  const editor = document.getElementById('cfg-entregaveis');
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0) {
+    // verifica se a seleção está dentro do editor
+    const range = sel.getRangeAt(0);
+    if (editor.contains(range.commonAncestorContainer)) {
+      savedSelection = range.cloneRange();
+    }
+  }
+});
+
+function restoreSelection() {
+  if (!savedSelection) return false;
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(savedSelection);
+  return true;
+}
+
+function updateSwatch(color) {
+  document.getElementById('color-swatch').style.background = color;
+}
+
+function applyColor(color) {
+  updateSwatch(color);
+  const editor = document.getElementById('cfg-entregaveis');
+  editor.focus();
+  // Tenta restaurar seleção salva
+  if (savedSelection) {
+    restoreSelection();
+  }
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) {
+    // Nenhum texto selecionado — apenas atualiza o swatch para próximo uso
+    return;
+  }
+  document.execCommand('foreColor', false, color);
+  savedSelection = null;
+}
+
+function resetColor() {
+  const editor = document.getElementById('cfg-entregaveis');
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  // Remove cor aplicando a cor padrão do editor
+  document.execCommand('foreColor', false, '#9ba8c4');
+}
+
+// ── BOLD ──
+function execBold() {
+  document.getElementById('cfg-entregaveis').focus();
+  document.execCommand('bold', false, null);
+}
+
 function getActiveWeeks() {
   const total = parseInt(document.getElementById('cfg-num-semanas').value) || 4;
   const weeks = ALL_WEEKS.slice(0, total);
@@ -539,9 +645,8 @@ function getActiveWeeks() {
   });
 }
 
-// ── TOGGLE PREVIEW: dim rows that are off, update badge numbers live ──
 function refreshToggles() {
-  let displayNum = 1; // Capa is always 1
+  let displayNum = 1;
   TOGGLEABLE.forEach(sid => {
     const on  = document.getElementById('tog-' + sid).checked;
     const row = document.getElementById('tr-' + sid);
@@ -550,19 +655,14 @@ function refreshToggles() {
     if (on) { displayNum++; num.textContent = displayNum; }
     else    { num.textContent = '—'; }
   });
-  // Investimento badge
   displayNum++;
   document.getElementById('tn-7').textContent = displayNum;
 }
 
-// ── CRONO CONFIG ──
 function buildCronoConfig() {
   const total = parseInt(document.getElementById('cfg-num-semanas').value) || 4;
   const clampedTotal = Math.min(Math.max(total, 1), 8);
-
-  // Rebuild checkboxes for active total
   const cbCont = document.getElementById('week-checkboxes');
-  // Preserve existing checked states
   const prevStates = {};
   ALL_WEEKS.forEach(w => {
     const cb = document.getElementById('wcb-' + w.id);
@@ -576,10 +676,7 @@ function buildCronoConfig() {
     label.innerHTML = `<input type="checkbox" id="wcb-${w.id}" ${wasChecked?'checked':''} onchange="buildCronoConfig()" style="accent-color:var(--orange);width:13px;height:13px;cursor:pointer;"> ${w.label.replace('Semana ','S')}`;
     cbCont.appendChild(label);
   });
-
-  // Rebuild content blocks only for checked weeks
   const c = document.getElementById('crono-cfg');
-  // Preserve existing line values
   const savedLines = {};
   ALL_WEEKS.forEach(w => {
     const cont = document.getElementById('lines-' + w.id);
@@ -593,7 +690,6 @@ function buildCronoConfig() {
       });
     }
   });
-
   c.innerHTML = '';
   const activeWeeks = ALL_WEEKS.slice(0, clampedTotal).filter(w => {
     const cb = document.getElementById('wcb-' + w.id);
@@ -608,7 +704,6 @@ function buildCronoConfig() {
       <button class="btn-addline" onclick="addLine('${w.id}')">+ Adicionar linha</button>
     `;
     c.appendChild(block);
-    // Restore saved lines or add empty
     if (savedLines[w.id] && savedLines[w.id].some(l => l.txt)) {
       savedLines[w.id].forEach(l => addLineWithValue(w.id, l.txt, l.bold));
     } else {
@@ -616,6 +711,7 @@ function buildCronoConfig() {
     }
   });
 }
+
 function addLineWithValue(wid, txt, bold) {
   const cont = document.getElementById('lines-' + wid);
   const row  = document.createElement('div');
@@ -645,19 +741,13 @@ function removeLine(btn) {
   else row.querySelector('input').value = '';
 }
 function toggleLineBold(btn) { btn.classList.toggle('on'); }
-function execBold() {
-  document.getElementById('cfg-entregaveis').focus();
-  document.execCommand('bold', false, null);
-}
 
-// ── FORMAT ──
 function fmt(n) {
   if (n === undefined || isNaN(n)) return '—';
   if (n >= 1e6) return 'R$ ' + (n/1e6).toFixed(2).replace('.',',') + ' M';
   return 'R$ ' + Math.round(n).toLocaleString('pt-BR');
 }
 
-// ── FAT MODE ──
 function setFatMode(mode) {
   fatMode = mode;
   document.getElementById('btn-mensal').classList.toggle('active', mode==='mensal');
@@ -667,40 +757,28 @@ function setFatMode(mode) {
   calcInercia();
 }
 
-// ── LAUNCH ──
 function launchPresentation() {
   const cliente = document.getElementById('cfg-cliente').value.trim() || 'Cliente';
   const valor   = parseFloat(document.getElementById('cfg-valor').value) || 0;
   const prazo   = parseInt(document.getElementById('cfg-prazo').value)   || 0;
-
-  // Build the active slide list from toggles
   activeSlides = [1];
   TOGGLEABLE.forEach(sid => {
     if (document.getElementById('tog-' + sid).checked) activeSlides.push(sid);
   });
   activeSlides.push(7);
-
-  // Hide all slides; only show active ones
   document.querySelectorAll('.slide').forEach(s => {
     const sid = parseInt(s.dataset.sid);
     s.classList.remove('active');
     s.style.display = activeSlides.includes(sid) ? '' : 'none';
   });
-
-  // Activate first slide
   currentSid = 1;
   document.getElementById('slide-1').classList.add('active');
-
-  // Nav steps — numbered 1..N for active slides
   document.getElementById('nav-steps').innerHTML = activeSlides.map((sid, i) =>
     `<div class="nav-step ${i===0?'active':''}" onclick="goToSid(${sid})">${i+1}</div>`
   ).join('');
-
-  // Fill dynamic content
   document.getElementById('nav-client-name').textContent = cliente;
   document.getElementById('s1-cliente').textContent      = cliente;
   document.getElementById('s3-entregaveis').innerHTML    = document.getElementById('cfg-entregaveis').innerHTML || '—';
-
   const cronoEl = document.getElementById('s4-crono');
   cronoEl.innerHTML = '';
   getActiveWeeks().forEach(w => {
@@ -718,18 +796,14 @@ function launchPresentation() {
         <div class="crono-body">${lines.map(l=>`<span class="crono-line${l.bold?' bold':''}">${l.txt}</span>`).join('')}</div>
       </div>`;
   });
-
   document.getElementById('s7-valor').textContent = valor > 0 ? fmt(valor) : '—';
   document.getElementById('s7-prazo').textContent = prazo > 0 ? prazo + (prazo === 1 ? ' mês' : ' meses') : '—';
-
   calcInercia();
-
   document.getElementById('config-screen').style.display       = 'none';
   document.getElementById('presentation-screen').style.display = 'block';
   window.scrollTo(0,0);
 }
 
-// ── NAVIGATION ──
 function goToSid(sid) {
   document.getElementById('slide-' + currentSid).classList.remove('active');
   currentSid = sid;
@@ -737,7 +811,6 @@ function goToSid(sid) {
   updateSteps();
   window.scrollTo(0,0);
 }
-
 function nextSlide() {
   const idx = activeSlides.indexOf(currentSid);
   if (idx < activeSlides.length - 1) goToSid(activeSlides[idx + 1]);
@@ -746,7 +819,6 @@ function prevSlide() {
   const idx = activeSlides.indexOf(currentSid);
   if (idx > 0) goToSid(activeSlides[idx - 1]);
 }
-
 function updateSteps() {
   const idx = activeSlides.indexOf(currentSid);
   document.querySelectorAll('.nav-step').forEach((el, i) => {
@@ -755,19 +827,16 @@ function updateSteps() {
     else if (i < idx) el.classList.add('done');
   });
 }
-
 function backToConfig() {
   document.getElementById('presentation-screen').style.display = 'none';
   document.getElementById('config-screen').style.display       = 'flex';
 }
 
-// ── PILARES / CÁLCULO ──
 function updatePillar(p, v) {
   pilares[p] = parseFloat(v) || 0;
   document.getElementById('pct-'+p).textContent = v + '%';
   calcInercia();
 }
-
 function calcInercia() {
   const raw  = parseFloat(document.getElementById('inercia-fat').value) || 0;
   const base = fatMode === 'anual' ? raw / 12 : raw;
@@ -797,7 +866,6 @@ function calcInercia() {
   }
 }
 
-// ── PDF ──
 async function downloadPDF() {
   const overlay = document.getElementById('pdf-overlay');
   overlay.classList.add('show');
@@ -808,9 +876,7 @@ async function downloadPDF() {
   const cliente = document.getElementById('nav-client-name').textContent || 'proposta';
   const savedSid = currentSid;
   nav.style.display = 'none';
-
   const slidesToExport = activeSlides.map(sid => document.getElementById('slide-' + sid));
-
   for (let i = 0; i < slidesToExport.length; i++) {
     slidesToExport.forEach((s, j) => {
       s.style.display        = j === i ? 'flex' : 'none';
@@ -832,12 +898,9 @@ async function downloadPDF() {
     if (i > 0) pdf.addPage([W,H], 'landscape');
     pdf.addImage(imgData, 'JPEG', 0, 0, W, H);
   }
-
   pdf.save(`BP_Proposta_${cliente.replace(/\s+/g,'_')}.pdf`);
-
   nav.style.display = 'flex';
   slidesToExport.forEach(s => { s.style.cssText = ''; });
-  // Restore visibility
   document.querySelectorAll('.slide').forEach(s => {
     const sid = parseInt(s.dataset.sid);
     s.style.display = activeSlides.includes(sid) ? '' : 'none';
@@ -846,15 +909,13 @@ async function downloadPDF() {
   overlay.classList.remove('show');
 }
 
-// ── KEYBOARD ──
 document.addEventListener('keydown', e => {
   if (document.getElementById('presentation-screen').style.display === 'none') return;
   if (e.key==='ArrowRight'||e.key==='ArrowDown') nextSlide();
   if (e.key==='ArrowLeft' ||e.key==='ArrowUp')   prevSlide();
 });
 
-// ── INIT ──
-buildCronoConfig(); // also builds checkboxes on first call
+buildCronoConfig();
 refreshToggles();
 </script>
 </body>
