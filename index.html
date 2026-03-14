@@ -15,6 +15,7 @@
   --red: #e53e3e; --red-dim: rgba(229,62,62,0.10);
   --green: #00e5a0; --green-dim: rgba(0,229,160,0.08);
   --blue: #4e7cff; --accent3: #ff6b35;
+  --gold: #f0b429; --gold-dim: rgba(240,180,41,0.10);
   --text: #e8ecf4; --muted: #6b7592; --label: #9ba8c4;
   --font: 'Sora', sans-serif; --mono: 'JetBrains Mono', monospace; --radius: 14px;
 }
@@ -43,34 +44,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .rtb { display:flex; gap:6px; margin-bottom:8px; align-items:center; flex-wrap:wrap; }
 .rtb-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 14px; font-family:var(--font); font-size:12px; font-weight:700; color:var(--label); cursor:pointer; transition:all .15s; user-select:none; }
 .rtb-btn:hover { border-color:var(--orange); color:var(--orange); }
-
-/* ── Color picker button ── */
 .rtb-color-wrap { position:relative; display:flex; align-items:center; }
-.rtb-color-btn {
-  background:var(--surface2); border:1px solid var(--border); border-radius:6px;
-  padding:5px 10px; font-family:var(--font); font-size:12px; font-weight:700;
-  color:var(--label); cursor:pointer; transition:all .15s; user-select:none;
-  display:flex; align-items:center; gap:7px;
-}
+.rtb-color-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 10px; font-family:var(--font); font-size:12px; font-weight:700; color:var(--label); cursor:pointer; transition:all .15s; user-select:none; display:flex; align-items:center; gap:7px; }
 .rtb-color-btn:hover { border-color:var(--orange); color:var(--orange); }
-.color-swatch {
-  width:14px; height:14px; border-radius:3px; border:1px solid rgba(255,255,255,.15);
-  display:inline-block; transition:background .15s;
-}
-/* hidden native input overlaid on button */
-.rtb-color-input {
-  position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
-  border:none; padding:0; margin:0;
-}
-
-/* Reset color button */
-.rtb-reset-btn {
-  background:var(--surface2); border:1px solid var(--border); border-radius:6px;
-  padding:5px 10px; font-family:var(--font); font-size:11px; font-weight:600;
-  color:var(--muted); cursor:pointer; transition:all .15s; user-select:none;
-}
+.color-swatch { width:14px; height:14px; border-radius:3px; border:1px solid rgba(255,255,255,.15); display:inline-block; transition:background .15s; }
+.rtb-color-input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; border:none; padding:0; margin:0; }
+.rtb-reset-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 10px; font-family:var(--font); font-size:11px; font-weight:600; color:var(--muted); cursor:pointer; transition:all .15s; user-select:none; }
 .rtb-reset-btn:hover { border-color:var(--red); color:var(--red); }
-
 .rich-editor { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:13px 15px; min-height:130px; font-family:var(--font); font-size:13px; color:var(--text); outline:none; line-height:1.75; transition:border-color .2s,box-shadow .2s; }
 .rich-editor:focus { border-color:var(--orange); box-shadow:0 0 0 3px var(--orange-dim); }
 .rich-editor b, .rich-editor strong { font-weight:700; color:var(--text); }
@@ -103,8 +83,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .stog-num.dim { color:var(--muted); background:transparent; border-color:var(--border); }
 .stog-name { font-size:13px; font-weight:500; color:var(--label); }
 .stog-badge { font-size:10px; color:var(--muted); margin-left:4px; font-weight:400; }
-
-/* iOS toggle switch */
 .sw { position:relative; width:42px; height:24px; flex-shrink:0; }
 .sw input { opacity:0; width:0; height:0; position:absolute; }
 .sw-track { position:absolute; inset:0; background:var(--border2); border-radius:100px; cursor:pointer; transition:background .2s; }
@@ -237,7 +215,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .ancora-cost-value { font-family:var(--mono); font-size:56px; font-weight:700; color:var(--red); letter-spacing:-.04em; line-height:1; margin-bottom:10px; }
 .ancora-cost-desc { font-size:13px; color:var(--muted); font-weight:300; line-height:1.6; max-width:520px; }
 
-/* SLIDE 7 */
+/* SLIDE 7 — INVESTIMENTO (preço cheio) */
 .invest-center { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; gap:22px; }
 .invest-box { background:var(--surface); border:1px solid rgba(0,229,160,.3); border-radius:20px; padding:44px 72px; position:relative; overflow:hidden; }
 .invest-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--green); }
@@ -245,6 +223,63 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .invest-value { font-family:var(--mono); font-size:clamp(52px,7vw,84px); font-weight:700; color:var(--green); letter-spacing:-.04em; line-height:1; margin-bottom:8px; }
 .invest-prazo { font-size:14px; color:var(--muted); font-weight:300; letter-spacing:.04em; margin-bottom:18px; }
 .invest-avista { display:inline-flex; align-items:center; gap:7px; background:rgba(0,229,160,.08); border:1px solid rgba(0,229,160,.25); border-radius:100px; padding:8px 22px; font-size:12px; font-weight:600; color:var(--green); letter-spacing:.04em; }
+
+/* SLIDE 8 — CONDIÇÃO ESPECIAL */
+.slide-cond { align-items:center; text-align:center; }
+.cond-wrapper { display:flex; flex-direction:column; align-items:center; gap:20px; width:100%; max-width:680px; }
+.cond-box {
+  background:var(--surface);
+  border:1px solid rgba(240,180,41,.4);
+  border-radius:20px;
+  padding:48px 80px;
+  position:relative;
+  overflow:hidden;
+  width:100%;
+}
+.cond-box::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--gold), rgba(240,180,41,.2));
+}
+.cond-box::after {
+  content:'';
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(240,180,41,.04) 0%, transparent 65%);
+  pointer-events:none;
+}
+.cond-badge {
+  display:inline-flex; align-items:center; gap:7px;
+  background:rgba(240,180,41,.1); border:1px solid rgba(240,180,41,.3);
+  border-radius:100px; padding:6px 18px;
+  font-family:var(--mono); font-size:10px; font-weight:700;
+  letter-spacing:.15em; text-transform:uppercase; color:var(--gold);
+  margin-bottom:18px;
+}
+.cond-label { font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.cond-value { font-family:var(--mono); font-size:clamp(52px,7vw,84px); font-weight:700; color:var(--gold); letter-spacing:-.04em; line-height:1; margin-bottom:8px; }
+.cond-prazo { font-size:14px; color:var(--muted); font-weight:300; letter-spacing:.04em; margin-bottom:20px; }
+.cond-desc-row { display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
+.cond-desc-pill {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(240,180,41,.07); border:1px solid rgba(240,180,41,.2);
+  border-radius:100px; padding:10px 24px;
+  font-size:13px; font-weight:600; color:var(--gold);
+}
+.cond-desc-pill span { font-size:16px; }
+.cond-footer {
+  font-size:11px; color:var(--muted); font-weight:300;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:9px; padding:12px 20px;
+  width:100%;
+}
+.cond-footer strong { color:var(--label); font-weight:600; }
+
+/* Config card — alavancagem */
+.alavancagem-cfg { background:var(--surface2); border:1px solid rgba(240,180,41,.25); border-radius:10px; padding:18px; margin-top:4px; position:relative; }
+.alavancagem-cfg::before { content:'⚡'; position:absolute; top:-10px; left:16px; font-size:16px; }
 
 #pdf-overlay { display:none; position:fixed; inset:0; z-index:999; background:rgba(13,15,20,.85); backdrop-filter:blur(6px); align-items:center; justify-content:center; flex-direction:column; gap:14px; }
 #pdf-overlay.show { display:flex; }
@@ -274,34 +309,17 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   <div class="config-card">
     <div class="cfg-title">Escopo de Entregáveis:</div>
-
-    <!-- ── TOOLBAR com cor de texto ── -->
     <div class="rtb">
       <button class="rtb-btn" onmousedown="event.preventDefault();execBold()"><b>N</b> &nbsp;Negrito</button>
-
-      <!-- Botão de cor -->
       <div class="rtb-color-wrap" title="Cor do texto">
         <button class="rtb-color-btn" onmousedown="event.preventDefault();">
           <span style="font-size:12px;font-weight:700;">A</span>
-          <span class="color-swatch" id="color-swatch" style="background:#F5680A;"></span>
-          ▾
+          <span class="color-swatch" id="color-swatch" style="background:#F5680A;"></span>▾
         </button>
-        <!-- input nativo sobreposto, invisível -->
-        <input
-          type="color"
-          class="rtb-color-input"
-          id="color-picker"
-          value="#F5680A"
-          onchange="applyColor(this.value)"
-          oninput="updateSwatch(this.value)"
-          title="Escolher cor"
-        >
+        <input type="color" class="rtb-color-input" id="color-picker" value="#F5680A" onchange="applyColor(this.value)" oninput="updateSwatch(this.value)" title="Escolher cor">
       </div>
-
-      <!-- Resetar cor -->
       <button class="rtb-reset-btn" onmousedown="event.preventDefault();resetColor()" title="Remover cor">✕ cor</button>
     </div>
-
     <div class="rich-editor" id="cfg-entregaveis" contenteditable="true" spellcheck="false">• Diagnóstico completo da operação comercial
 • Implantação e configuração do CRM
 • Playbook comercial completo
@@ -316,8 +334,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
       <div class="field" style="flex-shrink:0;width:180px;">
         <label>Número de semanas</label>
-        <input type="number" id="cfg-num-semanas" value="4" min="1" max="8"
-          oninput="buildCronoConfig()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;-moz-appearance:textfield;">
+        <input type="number" id="cfg-num-semanas" value="4" min="1" max="8" oninput="buildCronoConfig()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;-moz-appearance:textfield;">
       </div>
       <div>
         <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--label);margin-bottom:8px;">Semanas com atividades:</div>
@@ -333,9 +350,25 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="field"><label>Valor do projeto (R$)</label><input type="number" id="cfg-valor" placeholder="Ex: 12000"></div>
       <div class="field"><label>Duração do projeto (meses)</label><input type="number" id="cfg-prazo" placeholder="Ex: 3" min="1"></div>
     </div>
+
+    <!-- ALAVANCAGEM FINANCEIRA -->
+    <div class="alavancagem-cfg">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;margin-top:4px;">Condição Especial de Fechamento:</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Valor com condição (R$)</label>
+          <input type="number" id="cfg-valor-cond" placeholder="Ex: 10500">
+        </div>
+        <div class="field">
+          <label>Descrição da condição</label>
+          <input type="text" id="cfg-desc-cond" placeholder="Ex: Fechamento no dia">
+        </div>
+      </div>
+      <div class="field-hint" style="color:rgba(240,180,41,.6);">⚡ Será exibido como slide extra após o preço cheio — apenas se preenchido.</div>
+    </div>
   </div>
 
-  <!-- ── SLIDE VISIBILITY TOGGLES ── -->
+  <!-- SLIDE VISIBILITY TOGGLES -->
   <div class="config-card">
     <div class="cfg-title">Slides da apresentação:</div>
     <div class="slides-toggle-list">
@@ -394,6 +427,15 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
           <span class="stog-num dim" id="tn-7">7</span>
           <span class="stog-name">Investimento</span>
           <span class="stog-badge">— sempre exibido</span>
+        </div>
+        <label class="sw"><input type="checkbox" checked disabled><span class="sw-track"></span></label>
+      </div>
+
+      <div class="stog-row locked" id="tr-8-info">
+        <div class="stog-left">
+          <span class="stog-num dim" id="tn-8">8</span>
+          <span class="stog-name">⚡ Condição Especial</span>
+          <span class="stog-badge">— exibido se preenchido</span>
         </div>
         <label class="sw"><input type="checkbox" checked disabled><span class="sw-track"></span></label>
       </div>
@@ -540,7 +582,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     </div>
   </div>
 
-  <!-- SLIDE 7 — INVESTIMENTO -->
+  <!-- SLIDE 7 — INVESTIMENTO (preço cheio) -->
   <div class="slide" id="slide-7" data-sid="7">
     <div class="slide-header">
       <div class="slide-tag">Investimento</div>
@@ -552,6 +594,28 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
         <div class="invest-value" id="s7-valor">R$—</div>
         <div class="invest-prazo" id="s7-prazo">— meses</div>
         <div class="invest-avista">✓ À vista ou parcelado no cartão + taxas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 — CONDIÇÃO ESPECIAL -->
+  <div class="slide slide-cond" id="slide-8" data-sid="8">
+    <div class="slide-header" style="text-align:center;">
+      <div class="slide-tag" style="justify-content:center;">Alavancagem Financeira</div>
+      <div class="slide-title">Condição especial para <span>fechamento hoje:</span></div>
+    </div>
+    <div class="cond-wrapper">
+      <div class="cond-box">
+        <div class="cond-badge">⚡ Válido apenas hoje</div>
+        <div class="cond-label">Valor com condição especial</div>
+        <div class="cond-value" id="s8-valor">R$—</div>
+        <div class="cond-prazo" id="s8-prazo">— meses</div>
+        <div class="cond-desc-row">
+          <div class="cond-desc-pill"><span>🎯</span> <span id="s8-desc">—</span></div>
+        </div>
+      </div>
+      <div class="cond-footer">
+        Valor cheio do projeto: <strong id="s8-valor-cheio">R$—</strong> &nbsp;·&nbsp; Esta condição é exclusiva para decisão na reunião de hoje.
       </div>
     </div>
   </div>
@@ -569,7 +633,7 @@ let activeSlides = [];
 let currentSid   = 1;
 const pilares    = { canais:0, processo:0, oferta:0 };
 let fatMode      = 'mensal';
-let savedSelection = null; // guarda a seleção antes de abrir o color picker
+let savedSelection = null;
 
 const TOGGLEABLE = [2,3,4,5,6];
 const ALL_WEEKS = [
@@ -578,13 +642,10 @@ const ALL_WEEKS = [
   {id:'w7',label:'Semana 07'},{id:'w8',label:'Semana 08'},
 ];
 
-// ── SALVAR E RESTAURAR SELEÇÃO ──
-// O color picker nativo causa blur no editor — salvamos a seleção antes de abrir
 document.getElementById('color-picker').addEventListener('mousedown', () => {
   const editor = document.getElementById('cfg-entregaveis');
   const sel = window.getSelection();
   if (sel && sel.rangeCount > 0) {
-    // verifica se a seleção está dentro do editor
     const range = sel.getRangeAt(0);
     if (editor.contains(range.commonAncestorContainer)) {
       savedSelection = range.cloneRange();
@@ -599,38 +660,24 @@ function restoreSelection() {
   sel.addRange(savedSelection);
   return true;
 }
-
-function updateSwatch(color) {
-  document.getElementById('color-swatch').style.background = color;
-}
-
+function updateSwatch(color) { document.getElementById('color-swatch').style.background = color; }
 function applyColor(color) {
   updateSwatch(color);
   const editor = document.getElementById('cfg-entregaveis');
   editor.focus();
-  // Tenta restaurar seleção salva
-  if (savedSelection) {
-    restoreSelection();
-  }
+  if (savedSelection) restoreSelection();
   const sel = window.getSelection();
-  if (!sel || sel.isCollapsed) {
-    // Nenhum texto selecionado — apenas atualiza o swatch para próximo uso
-    return;
-  }
+  if (!sel || sel.isCollapsed) return;
   document.execCommand('foreColor', false, color);
   savedSelection = null;
 }
-
 function resetColor() {
   const editor = document.getElementById('cfg-entregaveis');
   editor.focus();
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed) return;
-  // Remove cor aplicando a cor padrão do editor
   document.execCommand('foreColor', false, '#9ba8c4');
 }
-
-// ── BOLD ──
 function execBold() {
   document.getElementById('cfg-entregaveis').focus();
   document.execCommand('bold', false, null);
@@ -657,6 +704,8 @@ function refreshToggles() {
   });
   displayNum++;
   document.getElementById('tn-7').textContent = displayNum;
+  // Slide 8 (condição especial) vem sempre depois do 7
+  document.getElementById('tn-8').textContent = displayNum + 1;
 }
 
 function buildCronoConfig() {
@@ -683,10 +732,7 @@ function buildCronoConfig() {
     if (cont) {
       savedLines[w.id] = [];
       cont.querySelectorAll('.crono-line-row').forEach(row => {
-        savedLines[w.id].push({
-          txt: row.querySelector('input').value,
-          bold: row.querySelector('.crono-bold-btn').classList.contains('on')
-        });
+        savedLines[w.id].push({ txt: row.querySelector('input').value, bold: row.querySelector('.crono-bold-btn').classList.contains('on') });
       });
     }
   });
@@ -701,8 +747,7 @@ function buildCronoConfig() {
     block.innerHTML = `
       <div class="crono-cfg-wlabel">${w.label}:</div>
       <div class="crono-lines" id="lines-${w.id}"></div>
-      <button class="btn-addline" onclick="addLine('${w.id}')">+ Adicionar linha</button>
-    `;
+      <button class="btn-addline" onclick="addLine('${w.id}')">+ Adicionar linha</button>`;
     c.appendChild(block);
     if (savedLines[w.id] && savedLines[w.id].some(l => l.txt)) {
       savedLines[w.id].forEach(l => addLineWithValue(w.id, l.txt, l.bold));
@@ -719,8 +764,7 @@ function addLineWithValue(wid, txt, bold) {
   row.innerHTML = `
     <input class="crono-line-input" type="text" value="${txt.replace(/"/g,'&quot;')}" placeholder="Atividade...">
     <button class="crono-bold-btn${bold?' on':''}" onclick="toggleLineBold(this)" title="Negrito">N</button>
-    <button class="crono-rm-btn" onclick="removeLine(this)" title="Remover">✕</button>
-  `;
+    <button class="crono-rm-btn" onclick="removeLine(this)" title="Remover">✕</button>`;
   cont.appendChild(row);
 }
 function addLine(wid) {
@@ -730,8 +774,7 @@ function addLine(wid) {
   row.innerHTML = `
     <input class="crono-line-input" type="text" placeholder="Atividade...">
     <button class="crono-bold-btn" onclick="toggleLineBold(this)" title="Negrito">N</button>
-    <button class="crono-rm-btn"   onclick="removeLine(this)"     title="Remover">✕</button>
-  `;
+    <button class="crono-rm-btn"   onclick="removeLine(this)"     title="Remover">✕</button>`;
   cont.appendChild(row);
 }
 function removeLine(btn) {
@@ -758,27 +801,36 @@ function setFatMode(mode) {
 }
 
 function launchPresentation() {
-  const cliente = document.getElementById('cfg-cliente').value.trim() || 'Cliente';
-  const valor   = parseFloat(document.getElementById('cfg-valor').value) || 0;
-  const prazo   = parseInt(document.getElementById('cfg-prazo').value)   || 0;
+  const cliente   = document.getElementById('cfg-cliente').value.trim() || 'Cliente';
+  const valor     = parseFloat(document.getElementById('cfg-valor').value) || 0;
+  const prazo     = parseInt(document.getElementById('cfg-prazo').value)   || 0;
+  const valorCond = parseFloat(document.getElementById('cfg-valor-cond').value) || 0;
+  const descCond  = document.getElementById('cfg-desc-cond').value.trim() || 'Condição especial';
+  const temCond   = valorCond > 0;
+
   activeSlides = [1];
   TOGGLEABLE.forEach(sid => {
     if (document.getElementById('tog-' + sid).checked) activeSlides.push(sid);
   });
   activeSlides.push(7);
+  if (temCond) activeSlides.push(8);
+
   document.querySelectorAll('.slide').forEach(s => {
     const sid = parseInt(s.dataset.sid);
     s.classList.remove('active');
     s.style.display = activeSlides.includes(sid) ? '' : 'none';
   });
+
   currentSid = 1;
   document.getElementById('slide-1').classList.add('active');
   document.getElementById('nav-steps').innerHTML = activeSlides.map((sid, i) =>
     `<div class="nav-step ${i===0?'active':''}" onclick="goToSid(${sid})">${i+1}</div>`
   ).join('');
+
   document.getElementById('nav-client-name').textContent = cliente;
   document.getElementById('s1-cliente').textContent      = cliente;
   document.getElementById('s3-entregaveis').innerHTML    = document.getElementById('cfg-entregaveis').innerHTML || '—';
+
   const cronoEl = document.getElementById('s4-crono');
   cronoEl.innerHTML = '';
   getActiveWeeks().forEach(w => {
@@ -796,8 +848,17 @@ function launchPresentation() {
         <div class="crono-body">${lines.map(l=>`<span class="crono-line${l.bold?' bold':''}">${l.txt}</span>`).join('')}</div>
       </div>`;
   });
+
+  // Slide 7 — preço cheio
   document.getElementById('s7-valor').textContent = valor > 0 ? fmt(valor) : '—';
   document.getElementById('s7-prazo').textContent = prazo > 0 ? prazo + (prazo === 1 ? ' mês' : ' meses') : '—';
+
+  // Slide 8 — condição especial
+  document.getElementById('s8-valor').textContent      = temCond ? fmt(valorCond) : '—';
+  document.getElementById('s8-prazo').textContent      = prazo > 0 ? prazo + (prazo === 1 ? ' mês' : ' meses') : '—';
+  document.getElementById('s8-desc').textContent       = descCond;
+  document.getElementById('s8-valor-cheio').textContent = valor > 0 ? fmt(valor) : '—';
+
   calcInercia();
   document.getElementById('config-screen').style.display       = 'none';
   document.getElementById('presentation-screen').style.display = 'block';
