@@ -1286,4 +1286,630 @@
   });
 </script>
 </body>
+</html>    line-height: 1.6; 
+    min-height: 100vh; 
+    overflow-x: hidden;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(245, 104, 10, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(37, 211, 102, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 40% 20%, rgba(127, 119, 221, 0.05) 0%, transparent 50%);
+    animation: bgShift 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes bgShift {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1.2; }
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(245,104,10,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(29,158,117,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 0%, rgba(127,119,221,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: gradientShift 15s ease-in-out infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {
+      background: radial-gradient(circle at 20% 50%, rgba(245,104,10,0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(29,158,117,0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 0%, rgba(127,119,221,0.04) 0%, transparent 50%);
+    }
+    50% {
+      background: radial-gradient(circle at 80% 20%, rgba(245,104,10,0.06) 0%, transparent 50%),
+                  radial-gradient(circle at 20% 70%, rgba(29,158,117,0.07) 0%, transparent 50%),
+                  radial-gradient(circle at 60% 40%, rgba(127,119,221,0.05) 0%, transparent 50%);
+    }
+  }
+
+  .wrapper { 
+    max-width: 520px; 
+    margin: 0 auto; 
+    padding: 0 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .topbar { 
+    background: rgba(20, 20, 20, 0.8); 
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border); 
+    padding: 11px 20px; 
+    text-align: center; 
+    position: sticky; 
+    top: 0; 
+    z-index: 100;
+  }
+  .topbar-inner { 
+    max-width: 520px; 
+    margin: 0 auto; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; 
+  }
+  .topbar-text { 
+    font-size: 11px; 
+    font-weight: 700; 
+    color: #ef4444; 
+    letter-spacing: 0.04em; 
+    text-transform: uppercase; 
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  .hero { 
+    padding: 12px 0 0; 
+    text-align: center; 
+    animation: fadeUp .5s ease both; 
+  }
+
+  .title-wrap { 
+    position: relative; 
+    margin-bottom: 8px; 
+    padding: 0; 
+    overflow: hidden; 
+  }
+
+  .title-bg {
+    position: absolute; 
+    inset: 0; 
+    pointer-events: none; 
+    overflow: hidden; 
+    border-radius: 8px;
+  }
+
+  .title-bg-glow {
+    position: absolute; 
+    top: 50%; left: 50%; 
+    transform: translate(-50%,-50%);
+    width: 200px; height: 200px; 
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,104,10,.08) 0%, transparent 70%);
+    animation: glow-pulse 4s ease-in-out infinite;
+  }
+  @keyframes glow-pulse { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.3)} }
+
+  .hero-title-red {
+    display: block; 
+    font-size: clamp(18px, 5.2vw, 26px); 
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    color: var(--white); 
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.15; 
+    margin-bottom: 0px; 
+    position: relative; 
+    z-index: 1;
+  }
+
+  .title-red-word { color: var(--white); }
+
+  .live-class-box {
+    background: rgba(245, 245, 245, 0.05);
+    border: 1px solid rgba(245, 245, 245, 0.12);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 6px auto 8px;
+    max-width: 420px;
+    font-family: var(--font);
+    line-height: 1.3;
+  }
+
+  .live-class-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .live-class-dot {
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  .live-class-box .hero-sub-title {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.3;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  .hero-copy-in-box {
+    font-size: 10px; 
+    color: #25D366; 
+    line-height: 1.3;
+    font-weight: 800; 
+    text-align: center;
+    margin: 5px 0 0 0;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  .event-highlight {
+    background: rgba(255, 107, 107, 0.12);
+    border: 1.5px solid rgba(255, 107, 107, 0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 0 auto 8px;
+    max-width: 420px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .event-highlight::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+  }
+
+  .event-highlight-text {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #ef4444;
+    position: relative;
+    z-index: 1;
+  }
+
+  .elements-container {
+    background: rgba(245, 245, 245, 0.06);
+    border: 1px solid rgba(245, 245, 245, 0.12);
+    border-radius: 14px;
+    padding: 12px;
+    margin: 0 auto 6px;
+    max-width: 420px;
+  }
+
+  .gear-track { 
+    display: flex; 
+    gap: 6px; 
+    padding: 0; 
+    justify-content: center;
+  }
+
+  .gear-card {
+    flex: 0 0 90px;
+    background: transparent;
+    border: none;
+    border-radius: 0; 
+    padding: 10px 6px 8px; 
+    text-align: center;
+    position: relative; 
+    overflow: visible; 
+    cursor: pointer;
+  }
+  .gear-card.gc1 { border-top: 2px solid #F5680A; }
+  .gear-card.gc2 { border-top: 2px solid #1D9E75; }
+  .gear-card.gc3 { border-top: 2px solid #7F77DD; }
+
+  .gear-card::before {
+    content: ''; 
+    position: absolute; 
+    inset: 0; 
+    border-radius: 14px;
+    opacity: 0; 
+    transition: opacity .4s; 
+    pointer-events: none;
+  }
+  .gc1::before { background: radial-gradient(circle at 50% 120%, rgba(245,104,10,.18) 0%, transparent 65%); }
+  .gc2::before { background: radial-gradient(circle at 50% 120%, rgba(29,158,117,.18) 0%, transparent 65%); }
+  .gc3::before { background: radial-gradient(circle at 50% 120%, rgba(127,119,221,.18) 0%, transparent 65%); }
+  .gear-card.active::before { opacity: 1; }
+
+  .gear-icon {
+    width: 44px; height: 44px; 
+    margin: 0 auto 10px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    border-radius: 12px; 
+    position: relative;
+  }
+  .gc1 .gear-icon { background: rgba(245,104,10,.12); }
+  .gc2 .gear-icon { background: rgba(29,158,117,.12); }
+  .gc3 .gear-icon { background: rgba(127,119,221,.12); }
+
+  .gear-ring { 
+    position: absolute; 
+    inset: 0; 
+    border-radius: 12px; 
+    opacity: 0; 
+  }
+  .gc1 .gear-ring { border: 1.5px solid #F5680A; }
+  .gc2 .gear-ring { border: 1.5px solid #1D9E75; }
+  .gc3 .gear-ring { border: 1.5px solid #7F77DD; }
+
+  @keyframes spin-cw  { from{transform:rotate(0deg)}  to{transform:rotate(360deg)} }
+  @keyframes spin-ccw { from{transform:rotate(0deg)}  to{transform:rotate(-360deg)} }
+  .gc1 .gear-svg { animation: spin-cw  7s linear infinite; opacity: 0.35; transition: opacity .4s ease; }
+  .gc2 .gear-svg { animation: spin-ccw 9s linear infinite; opacity: 0.35; transition: opacity .4s ease; }
+  .gc3 .gear-svg { animation: spin-cw 11s linear infinite; opacity: 0.35; transition: opacity .4s ease; }
+  .gear-card.active .gear-svg { opacity: 1; }
+
+  .gear-num { 
+    font-size: 9px; 
+    font-weight: 700; 
+    letter-spacing: .12em; 
+    color: #FFFFFF; 
+    margin-bottom: 6px; 
+  }
+  .gear-name { 
+    font-size: 11px; 
+    font-weight: 700; 
+    color: #FFFFFF; 
+    line-height: 1.35; 
+  }
+  .gc1.active .gear-name { color: #F5680A; }
+  .gc2.active .gear-name { color: #25D366; }
+  .gc3.active .gear-name { color: #7F77DD; }
+
+  .chart-section {
+    margin-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+  }
+
+  .chart-title {
+    font-size: 11px; 
+    font-weight: 800; 
+    letter-spacing: .12em;
+    text-transform: uppercase; 
+    color: var(--orange); 
+    margin-bottom: 12px;
+    text-shadow: 0 0 20px rgba(245, 104, 10, 0.4);
+  }
+
+  .chart-wrapper {
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .chart-row-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+    padding-right: 15px;
+  }
+
+  .chart-row-bottom {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 12px;
+    padding-left: 15px;
+  }
+
+  .chart-label-start {
+    font-size: 10px;
+    font-weight: 800;
+    color: #ef4444;
+    letter-spacing: .05em;
+    line-height: 1;
+  }
+
+  .chart-label-end {
+    font-size: 10px;
+    font-weight: 800;
+    color: #25D366;
+    letter-spacing: .05em;
+    line-height: 1;
+  }
+
+  .chart-svg {
+    width: 100%;
+    height: 90px;
+    display: block;
+  }
+
+  .chart-footer {
+    font-size: 10px; 
+    color: var(--gray); 
+    text-align: center; 
+    font-weight: 600; 
+    margin-top: 8px; 
+    line-height: 1.5;
+  }
+
+  .live-label {
+    display: flex; 
+    align-items: flex-start; 
+    justify-content: center; 
+    gap: 6px;
+    font-size: 9px; 
+    font-weight: 800; 
+    letter-spacing: .11em;
+    text-transform: uppercase; 
+    color: var(--red);
+    margin: 0 auto 4px; 
+    max-width: 340px; 
+    text-align: center;
+  }
+
+  .btn-main {
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    width: 100%; 
+    max-width: 420px; 
+    margin: 0 auto 6px;
+    background: #25D366; 
+    color: #fff; 
+    border: none; 
+    border-radius: 10px;
+    padding: 13px; 
+    font-family: var(--font); 
+    font-size: 13px; 
+    font-weight: 800;
+    cursor: pointer; 
+    text-decoration: none;
+    text-transform: uppercase; 
+    letter-spacing: .02em;
+    position: relative; 
+    overflow: hidden;
+    transition: background .2s, transform .15s;
+  }
+
+  .btn-main::after {
+    content: ''; 
+    position: absolute; 
+    top: 0; left: -100%; 
+    width: 55%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+    animation: green-shine 2.2s linear infinite;
+  }
+
+  @keyframes green-shine { 0%{left:-55%} 100%{left:155%} }
+  .btn-main:hover  { background: #1D9E75; transform: translateY(-1px) scale(1.01); }
+  .btn-main:active { transform: translateY(0) scale(.99); }
+
+  .spots-counter {
+    margin-top: 6px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #ef4444;
+    letter-spacing: .02em;
+    animation: urgency-pulse 1.5s ease-in-out infinite;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @keyframes urgency-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .footer { 
+    margin-top: 32px; 
+    padding-top: 16px; 
+    border-top: 1px solid rgba(36, 36, 36, 0.8); 
+    text-align: center; 
+    font-size: 10px; 
+    color: var(--gray); 
+    font-weight: 500; 
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-text">TERÇA-FEIRA ÀS 12H00 • GRATUITA • ONLINE</span>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="hero">
+
+    <div class="title-wrap">
+      <div class="title-bg"><div class="title-bg-glow"></div></div>
+      <span class="hero-title-red">Até quando você vai tolerar um <span class="title-red-word">comercial</span><br>que <span class="title-red-word">não entrega</span> o que deveria?</span>
+    </div>
+
+    <div class="live-class-box">
+      <div class="live-class-label"><div class="live-class-dot"></div>AULA AO VIVO</div>
+      <span class="hero-sub-title">Conheça os bastidores das 3 engrenagens<br>que levaram empresas de 20 mil para 150 mil/mês.</span>
+      <p class="hero-copy-in-box">E saia com um plano de ação pronto para<br>implementar no seu negócio.</p>
+    </div>
+
+    <div class="event-highlight">
+      <span class="event-highlight-text">TERÇA-FEIRA ÀS 12H00 • GRATUITA • ONLINE</span>
+    </div>
+
+    <div class="elements-container">
+      
+      <div class="gear-gallery">
+        <div class="gear-track" id="gear-track">
+
+          <div class="gear-card gc1 active" id="gc0">
+            <div class="gear-icon">
+              <div class="gear-ring"></div>
+              <svg class="gear-svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F5680A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </div>
+            <div class="gear-num">01</div>
+            <div class="gear-name">Canais de aquisição</div>
+          </div>
+
+          <div class="gear-card gc2" id="gc1">
+            <div class="gear-icon">
+              <div class="gear-ring"></div>
+              <svg class="gear-svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </div>
+            <div class="gear-num">02</div>
+            <div class="gear-name">Processo comercial</div>
+          </div>
+
+          <div class="gear-card gc3" id="gc2">
+            <div class="gear-icon">
+              <div class="gear-ring"></div>
+              <svg class="gear-svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </div>
+            <div class="gear-num">03</div>
+            <div class="gear-name">Construção de oferta</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <div class="chart-title">Crescimento em 90 dias</div>
+
+        <div class="chart-wrapper">
+          <div class="chart-row-top">
+            <span class="chart-label-end">+R$150 mil</span>
+          </div>
+
+          <svg class="chart-svg" viewBox="0 0 280 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="chartGlow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Linha da curva suave -->
+            <path d="M 20 85 Q 90 55 140 40 T 260 12" 
+                  stroke="#ef4444" stroke-width="3" fill="none" 
+                  stroke-linecap="round" stroke-linejoin="round"
+                  filter="url(#chartGlow)">
+              <animate attributeName="stroke" values="#ef4444;#25D366;#ef4444" dur="4s" repeatCount="indefinite" />
+            </path>
+
+            <!-- Bolinha inicial: R$20 mil -->
+            <circle cx="20" cy="85" r="4" fill="#ef4444">
+              <animate attributeName="fill" values="#ef4444;#25D366;#ef4444" dur="4s" repeatCount="indefinite" />
+            </circle>
+
+            <!-- Bolinha final: +R$150 mil -->
+            <circle cx="260" cy="12" r="4" fill="#25D366">
+              <animate attributeName="fill" values="#25D366;#ef4444;#25D366" dur="4s" repeatCount="indefinite" />
+            </circle>
+          </svg>
+
+          <div class="chart-row-bottom">
+            <span class="chart-label-start">R$20 mil</span>
+          </div>
+        </div>
+
+        <div class="chart-footer">Modelo que gerou +R$500M em vendas para parceiros</div>
+      </div>
+
+    </div>
+
+    <div class="live-label">
+      <span>Acesse o grupo oficial!</span>
+    </div>
+
+    <a href="https://chat.whatsapp.com/Iwi10qePQ49G6L6Z9wo7KU"
+       class="btn-main"
+       id="whatsapp-btn">
+      GARANTIR ACESSO EXCLUSIVO
+    </a>
+
+    <div class="spots-counter">
+      <span>20 VAGAS DISPONÍVEIS</span>
+    </div>
+
+  </div>
+
+  <div class="footer">© 2026 Branches Performance · Todos os direitos reservados</div>
+</div>
+
+<script>
+  const DURATION = 2200;
+  let current = 0, timer;
+  const cards = [document.getElementById('gc0'), document.getElementById('gc1'), document.getElementById('gc2')];
+
+  function goTo(i) {
+    clearTimeout(timer);
+    current = i;
+    cards.forEach((c,j) => c.classList.toggle('active', j === i));
+    schedule();
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(() => { current = (current + 1) % 3; goTo(current); }, DURATION);
+  }
+
+  window.addEventListener('load', () => goTo(0));
+
+  document.getElementById('whatsapp-btn').addEventListener('click', function() {
+    fbq('track', 'Lead');
+  });
+</script>
+</body>
 </html>
