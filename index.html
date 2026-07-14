@@ -1005,7 +1005,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
         <label class="sw"><input type="checkbox" id="tog-2" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
       </div>
       <div class="stog-row" id="tr-3">
-        <div class="stog-left"><span class="stog-num" id="tn-3">3</span><span class="stog-name">Entregáveis</span></div>
+        <div class="stog-left"><span class="stog-num" id="tn-3">3</span><span class="stog-name">Entregáveis <span class="stog-badge">(2 páginas)</span></span></div>
         <label class="sw"><input type="checkbox" id="tog-3" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
       </div>
       <div class="stog-row" id="tr-4">
@@ -1151,14 +1151,24 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
     </div>
   </div>
 
-  <!-- SLIDE 3 ENTREGÁVEIS -->
+  <!-- SLIDE 3a ENTREGÁVEIS PARTE 1 -->
   <div class="slide" id="slide-3" data-sid="3">
     <div class="slide-header">
-      <div class="slide-tag">Escopo de Entregas</div>
+      <div class="slide-tag">Escopo de Entregas — 1/2</div>
       <div class="slide-title">O que está <span>incluído:</span></div>
       <div class="slide-subtitle">Tudo que será entregue ao longo do projeto</div>
     </div>
     <div class="entregaveis-box" id="s3-entregaveis">—</div>
+  </div>
+
+  <!-- SLIDE 3b ENTREGÁVEIS PARTE 2 -->
+  <div class="slide" id="slide-3b" data-sid="3b">
+    <div class="slide-header">
+      <div class="slide-tag">Escopo de Entregas — 2/2</div>
+      <div class="slide-title">O que está <span>incluído:</span></div>
+      <div class="slide-subtitle">Continuação dos entregáveis do projeto</div>
+    </div>
+    <div class="entregaveis-box" id="s3b-entregaveis">—</div>
   </div>
 
   <!-- SLIDE 4 CRONOGRAMA -->
@@ -1909,20 +1919,43 @@ function launchPresentation(){
   if(temCond)activeSlides.push(9);
 
   document.querySelectorAll('.slide').forEach(s=>{
-    const sid=parseInt(s.dataset.sid);
+    const sid=s.dataset.sid;
     s.classList.remove('active');
-    s.style.display=activeSlides.includes(sid)?'':'none';
+    s.style.display=activeSlides.includes(sid)||activeSlides.includes(parseInt(sid))?'':'none';
   });
 
   currentSid=1;
   document.getElementById('slide-1').classList.add('active');
   document.getElementById('nav-steps').innerHTML=activeSlides.map((sid,i)=>
-    '<div class="nav-step '+(i===0?'active':'')+'" onclick="goToSid('+sid+')">'+(i+1)+'</div>'
+    `<div class="nav-step ${i===0?'active':''}" onclick="goToSid('${sid}')">${i+1}</div>`
   ).join('');
 
   document.getElementById('nav-client-name').textContent=cliente;
   document.getElementById('s1-cliente').textContent=cliente;
-  document.getElementById('s3-entregaveis').innerHTML=document.getElementById('cfg-entregaveis').innerHTML||'—';
+  // Entregáveis — divide o conteúdo em 2 slides
+  const cfgEntregaveis = document.getElementById('cfg-entregaveis');
+  const allChildren = Array.from(cfgEntregaveis.childNodes);
+
+  // Divide os nós em 2 metades aproximadamente iguais por número de elementos-bloco
+  const blockNodes = allChildren.filter(n => n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim()));
+  const half = Math.ceil(blockNodes.length / 2);
+  const part1 = blockNodes.slice(0, half);
+  const part2 = blockNodes.slice(half);
+
+  const box1 = document.getElementById('s3-entregaveis');
+  const box2 = document.getElementById('s3b-entregaveis');
+  box1.innerHTML = part1.map(n => n.outerHTML || n.textContent).join('') || '—';
+  box2.innerHTML = part2.map(n => n.outerHTML || n.textContent).join('') || '—';
+
+  // Adiciona 3b aos slides ativos se 3 estiver ativo
+  if(document.getElementById('tog-3').checked){
+    const idx3 = activeSlides.indexOf(3);
+    if(idx3 !== -1) activeSlides.splice(idx3+1, 0, '3b');
+  }
+
+  // Garantir que slide-3b seja visível se ativo
+  const slide3b = document.getElementById('slide-3b');
+  if(slide3b) slide3b.style.display = activeSlides.includes('3b') ? '' : 'none';
 
   const cronoEl=document.getElementById('s4-crono');
   cronoEl.innerHTML='';
@@ -1968,7 +2001,7 @@ function goToSid(sid){
     const next = document.getElementById('slide-'+currentSid);
     next.classList.add('active');
     // Inicializa quiz ao entrar no slide 11
-    if(sid===11){ qzRenderQuestion(); qzShowScreen('question'); }
+    if(sid===11||sid==='11'){ qzRenderQuestion(); qzShowScreen('question'); }
     updateSteps();
     window.scrollTo(0,0);
   },180);
@@ -2057,7 +2090,7 @@ async function downloadPDF(){
     pdf.addImage(imgData,'JPEG', x, y, imgW, imgH);
   }
 
-  const slidesToExport=activeSlides.map(sid=>document.getElementById('slide-'+sid));
+  const slidesToExport=activeSlides.map(sid=>document.getElementById('slide-'+sid)).filter(Boolean);
   let isFirstPage = true;
 
   for(let i=0;i<slidesToExport.length;i++){
@@ -2067,55 +2100,11 @@ async function downloadPDF(){
     // Esconder todos os slides
     slidesToExport.forEach(s=>s.style.display='none');
 
-    // Slide 3 = Entregáveis — captura altura real e fatia em páginas
-    if(sid === 3){
-      // Renderiza o slide com altura natural (sem corte)
+    // Todos os slides — comportamento normal (3 e 3b têm altura fixa agora)
+    {
       slide.style.display='flex';
       slide.style.flexDirection='column';
       slide.style.justifyContent='flex-start';
-      slide.style.width=W+'px';
-      slide.style.minHeight=H+'px';
-      slide.style.height='auto';
-      slide.style.padding='70px 52px 52px';
-      slide.style.overflow='visible';
-      await new Promise(r=>setTimeout(r,180));
-
-      // Captura o slide inteiro em uma imagem só (altura real)
-      const fullCanvas = await html2canvas(slide,{
-        scale:2, useCORS:true, backgroundColor:'#070c1a', logging:false,
-        width:W, windowWidth:W,
-        ignoreElements: el => el.classList.contains('blob') || el.id==='slide-watermark' || el.classList.contains('pres-nav')
-      });
-
-      // Fatia a imagem em pedaços de H pixels (escala 2x)
-      const pageH = H * 2; // altura de uma página na escala 2x
-      const totalPages = Math.ceil(fullCanvas.height / pageH);
-
-      for(let p=0; p<totalPages; p++){
-        const sliceY = p * pageH;
-        const sliceH = Math.min(pageH, fullCanvas.height - sliceY);
-
-        // Cria um canvas temporário para a fatia
-        const sliceCanvas = document.createElement('canvas');
-        sliceCanvas.width = fullCanvas.width;
-        sliceCanvas.height = pageH; // sempre altura de página cheia
-        const ctx = sliceCanvas.getContext('2d');
-        // Fundo navy para a área vazia no final
-        ctx.fillStyle = '#070c1a';
-        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
-        // Copia a fatia do canvas original
-        ctx.drawImage(fullCanvas, 0, sliceY, fullCanvas.width, sliceH, 0, 0, fullCanvas.width, sliceH);
-
-        const imgData = sliceCanvas.toDataURL('image/jpeg', 0.97);
-        if(!isFirstPage) pdf.addPage([W,H],'landscape');
-        pdf.addImage(imgData,'JPEG', 0, 0, W, H);
-        isFirstPage = false;
-      }
-    } else {
-      // Todos os outros slides — comportamento normal
-      slide.style.display='flex';
-      slide.style.flexDirection='column';
-      slide.style.justifyContent='center';
       slide.style.width=W+'px';
       slide.style.minHeight=H+'px';
       slide.style.height=H+'px';
@@ -2152,9 +2141,9 @@ async function downloadPDF(){
 
   slidesToExport.forEach(s=>{s.style.cssText='';});
   document.querySelectorAll('.slide').forEach(s=>{
-    const sid=parseInt(s.dataset.sid);
-    s.style.display=activeSlides.includes(sid)?'':'none';
-    s.classList.toggle('active',sid===savedSid);
+    const sid=s.dataset.sid;
+    s.style.display=(activeSlides.includes(sid)||activeSlides.includes(parseInt(sid)))?'':'none';
+    s.classList.toggle('active',sid==savedSid||sid===String(savedSid));
   });
   overlay.classList.remove('show');
 }
