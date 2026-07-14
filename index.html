@@ -2067,57 +2067,49 @@ async function downloadPDF(){
     // Esconder todos os slides
     slidesToExport.forEach(s=>s.style.display='none');
 
-    // Slide 3 = Entregáveis — tratamento especial com múltiplas páginas
+    // Slide 3 = Entregáveis — captura altura real e fatia em páginas
     if(sid === 3){
-      const entregaveisBox = slide.querySelector('.entregaveis-box');
-      if(entregaveisBox){
-        // Medir altura total do conteúdo
-        slide.style.display='flex';
-        slide.style.flexDirection='column';
-        slide.style.justifyContent='flex-start';
-        slide.style.width=W+'px';
-        slide.style.minHeight='auto';
-        slide.style.height='auto';
-        slide.style.padding='70px 52px 52px';
-        slide.style.overflow='visible';
-        await new Promise(r=>setTimeout(r,100));
+      // Renderiza o slide com altura natural (sem corte)
+      slide.style.display='flex';
+      slide.style.flexDirection='column';
+      slide.style.justifyContent='flex-start';
+      slide.style.width=W+'px';
+      slide.style.minHeight=H+'px';
+      slide.style.height='auto';
+      slide.style.padding='70px 52px 52px';
+      slide.style.overflow='visible';
+      await new Promise(r=>setTimeout(r,180));
 
-        const totalH = slide.scrollHeight;
-        const pagesNeeded = Math.ceil(totalH / H);
+      // Captura o slide inteiro em uma imagem só (altura real)
+      const fullCanvas = await html2canvas(slide,{
+        scale:2, useCORS:true, backgroundColor:'#070c1a', logging:false,
+        width:W, windowWidth:W,
+        ignoreElements: el => el.classList.contains('blob') || el.id==='slide-watermark' || el.classList.contains('pres-nav')
+      });
 
-        if(pagesNeeded <= 1){
-          // Cabe em uma página normalmente
-          slide.style.height=H+'px';
-          slide.style.overflow='hidden';
-          await capturePage(slide, isFirstPage);
-          isFirstPage = false;
-        } else {
-          // Divide em múltiplas páginas usando scrollY
-          for(let p=0;p<pagesNeeded;p++){
-            slide.style.height=H+'px';
-            slide.style.overflow='hidden';
-            slide.style.position='relative';
-            // Cria um wrapper que desloca o conteúdo para capturar cada "página"
-            const inner = slide.querySelector('.slide-header') || slide.firstElementChild;
-            if(entregaveisBox){
-              entregaveisBox.style.transform=`translateY(-${p*H*0.75}px)`;
-              if(p > 0) slide.querySelector('.slide-header') && (slide.querySelector('.slide-header').style.display='none');
-            }
-            await new Promise(r=>setTimeout(r,100));
-            const canvas=await html2canvas(slide,{
-              scale:3, useCORS:true, backgroundColor:'#070c1a', logging:false,
-              width:W, height:H, windowWidth:W, windowHeight:H,
-              ignoreElements: el => el.classList.contains('blob') || el.id==='slide-watermark' || el.classList.contains('pres-nav')
-            });
-            const imgData=canvas.toDataURL('image/jpeg',0.97);
-            if(!isFirstPage) pdf.addPage([W,H],'landscape');
-            pdf.addImage(imgData,'JPEG',0,0,W,H);
-            isFirstPage = false;
-          }
-          // Restaurar
-          entregaveisBox.style.transform='';
-          slide.querySelector('.slide-header') && (slide.querySelector('.slide-header').style.display='');
-        }
+      // Fatia a imagem em pedaços de H pixels (escala 2x)
+      const pageH = H * 2; // altura de uma página na escala 2x
+      const totalPages = Math.ceil(fullCanvas.height / pageH);
+
+      for(let p=0; p<totalPages; p++){
+        const sliceY = p * pageH;
+        const sliceH = Math.min(pageH, fullCanvas.height - sliceY);
+
+        // Cria um canvas temporário para a fatia
+        const sliceCanvas = document.createElement('canvas');
+        sliceCanvas.width = fullCanvas.width;
+        sliceCanvas.height = pageH; // sempre altura de página cheia
+        const ctx = sliceCanvas.getContext('2d');
+        // Fundo navy para a área vazia no final
+        ctx.fillStyle = '#070c1a';
+        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+        // Copia a fatia do canvas original
+        ctx.drawImage(fullCanvas, 0, sliceY, fullCanvas.width, sliceH, 0, 0, fullCanvas.width, sliceH);
+
+        const imgData = sliceCanvas.toDataURL('image/jpeg', 0.97);
+        if(!isFirstPage) pdf.addPage([W,H],'landscape');
+        pdf.addImage(imgData,'JPEG', 0, 0, W, H);
+        isFirstPage = false;
       }
     } else {
       // Todos os outros slides — comportamento normal
