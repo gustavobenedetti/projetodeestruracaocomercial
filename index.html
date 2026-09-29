@@ -530,6 +530,26 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
 .crono-rm-btn:hover{border-color:var(--red);color:var(--red)}
 .btn-addline{background:transparent;border:1px dashed rgba(46,109,212,0.3);border-radius:6px;padding:7px 14px;font-family:var(--font);font-size:11px;font-weight:600;color:var(--gray-3);cursor:pointer;transition:all .2s;margin-top:6px;width:100%}
 .btn-addline:hover{border-color:var(--blue-light);color:var(--blue-light)}
+
+/* CRONOGRAMA POR ETAPAS — configuração */
+.crono-cfg-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.crono-cfg-head .crono-cfg-wlabel{margin-bottom:0}
+.crono-stage-rm{background:transparent;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--font);font-size:10px;font-weight:600;color:var(--gray-3);cursor:pointer;transition:all .15s;white-space:nowrap}
+.crono-stage-rm:hover:not(:disabled){border-color:var(--red);color:var(--red)}
+.crono-stage-rm:disabled{opacity:.35;cursor:not-allowed}
+.crono-per-tog{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;font-weight:600;color:var(--gray-2);user-select:none;margin-bottom:12px}
+.crono-per-tog input{accent-color:var(--blue-light);width:14px;height:14px;cursor:pointer}
+.crono-per-fields{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.crono-per-fields[hidden]{display:none!important}
+.crono-per-fields .field{width:170px}
+.crono-per-fields .field input{color-scheme:dark}
+.crono-per-fields .field input[aria-invalid="true"]{border-color:var(--red)}
+.crono-per-warn{flex-basis:100%;font-size:11px;color:#fca5a5;background:var(--red-dim);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 10px}
+.crono-per-warn[hidden]{display:none!important}
+.btn-addstage{margin-top:12px;border-style:solid}
+.btn-addstage:disabled{opacity:.4;cursor:not-allowed}
+.crono-fit-warn{margin-top:12px;font-size:11px;line-height:1.5;color:#fde68a;background:var(--gold-dim);border:1px solid rgba(234,179,8,0.3);border-radius:8px;padding:9px 12px}
+.crono-fit-warn[hidden]{display:none!important}
 .video-cfg-list{display:flex;flex-direction:column;gap:8px}
 .video-cfg-row{display:flex;gap:8px;align-items:center}
 .video-num{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--blue-light);min-width:24px}
@@ -670,6 +690,28 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
 .crono-body{padding:14px 24px;display:flex;flex-direction:column;gap:3px;justify-content:center}
 .crono-line{font-size:13px;color:var(--gray-2);line-height:1.6}
 .crono-line.bold{font-weight:700;color:var(--white)}
+.crono-week-in{display:flex;flex-direction:column;gap:6px;min-width:0}
+.crono-period{display:flex;flex-direction:column;gap:2px;font-family:var(--mono);font-size:10px;line-height:1.35;color:var(--gray-2);letter-spacing:0.02em;white-space:nowrap}
+/* densidades (aplicadas por JS quando há muitas etapas/linhas, para caber no slide e no PDF) */
+.crono-list.d1{gap:3px}
+.crono-list.d1 .crono-week{padding:10px 16px}
+.crono-list.d1 .crono-body{padding:9px 20px}
+.crono-list.d1 .crono-line{font-size:12px;line-height:1.5}
+.crono-list.d2{gap:2px}
+.crono-list.d2 .crono-item{grid-template-columns:160px 1fr}
+.crono-list.d2 .crono-week{padding:7px 14px}
+.crono-list.d2 .crono-week-in{gap:3px}
+.crono-list.d2 .crono-period{font-size:9px;flex-direction:row;gap:6px}
+.crono-list.d2 .crono-body{padding:6px 16px}
+.crono-list.d2 .crono-line{font-size:11px;line-height:1.4}
+.crono-list.d3{gap:2px}
+.crono-list.d3 .crono-item{grid-template-columns:250px 1fr}
+.crono-list.d3 .crono-week{padding:5px 12px}
+.crono-list.d3 .crono-week-in{flex-direction:row;align-items:baseline;gap:10px}
+.crono-list.d3 .crono-week-lbl{font-size:9px}
+.crono-list.d3 .crono-period{font-size:9px;flex-direction:row;gap:6px}
+.crono-list.d3 .crono-body{padding:5px 14px;gap:1px}
+.crono-list.d3 .crono-line{font-size:10.5px;line-height:1.35}
 
 /* SLIDE 11 — DIAGNÓSTICO DE MATURIDADE */
 /* Quiz */
@@ -907,21 +949,15 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
     </div>
     <div class="rich-editor" id="cfg-entregaveis" contenteditable="true" spellcheck="false"></div>
     <div class="field-hint">Selecione o texto → <b style="color:var(--blue-light)">N</b> para negrito &nbsp;|&nbsp; <b style="color:var(--blue-light)">A▾</b> para cor</div>
+    <div class="crono-fit-warn" id="entreg-fit-warn" role="alert" hidden>⚠ O conteúdo dos entregáveis é grande demais para caber em até 3 slides. Reduza o texto para evitar cortes.</div>
   </div>
 
   <div class="config-card">
     <div class="cfg-title">Cronograma</div>
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
-      <div class="field" style="flex-shrink:0;width:180px;">
-        <label>Número de semanas</label>
-        <input type="number" id="cfg-num-semanas" value="4" min="1" max="8" oninput="buildCronoConfig()" style="background:var(--navy-card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--white);outline:none;-moz-appearance:textfield;">
-      </div>
-      <div>
-        <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-2);margin-bottom:8px;">Semanas com atividades:</div>
-        <div id="week-checkboxes" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-      </div>
-    </div>
     <div class="crono-cfg-list" id="crono-cfg"></div>
+    <button type="button" class="btn-addline btn-addstage" id="crono-add-etapa" onclick="cronoAddEtapa()">+ Adicionar etapa</button>
+    <div class="crono-fit-warn" id="crono-fit-warn" role="alert" hidden>⚠ O conteúdo do cronograma é grande demais para caber em um único slide (e no PDF). Reduza o número de linhas ou de etapas para evitar cortes.</div>
+    <div class="field-hint">O período (datas) é opcional em cada etapa. Etapas sem nenhuma atividade preenchida não aparecem no slide.</div>
   </div>
 
   <div class="config-card">
@@ -1005,7 +1041,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
         <label class="sw"><input type="checkbox" id="tog-2" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
       </div>
       <div class="stog-row" id="tr-3">
-        <div class="stog-left"><span class="stog-num" id="tn-3">3</span><span class="stog-name">Entregáveis <span class="stog-badge">(2 páginas)</span></span></div>
+        <div class="stog-left"><span class="stog-num" id="tn-3">3</span><span class="stog-name">Entregáveis <span class="stog-badge">(paginação automática)</span></span></div>
         <label class="sw"><input type="checkbox" id="tog-3" checked onchange="refreshToggles()"><span class="sw-track"></span></label>
       </div>
       <div class="stog-row" id="tr-4">
@@ -1070,11 +1106,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
   <!-- SLIDE 1 CAPA -->
   <div class="slide slide-capa" id="slide-1" data-sid="1">
     <div class="capa-tag">Projeto de Estruturação Comercial</div>
-    <div class="capa-title">Estruturação Comercial de<br><span>Alta Performance.</span></div>
+    <div class="capa-title">Implementação de<br><span>Engenharia Comercial.</span></div>
     <div class="capa-client">Preparado para <strong id="s1-cliente">—</strong></div>
     <div class="capa-stats">
       <div class="capa-stat"><div class="capa-stat-val">+R$510M</div><div class="capa-stat-desc">Em negócios gerados</div></div>
-      <div class="capa-stat"><div class="capa-stat-val">+90</div><div class="capa-stat-desc">Empresas atendidas</div></div>
+      <div class="capa-stat"><div class="capa-stat-val">+100</div><div class="capa-stat-desc">Empresas atendidas</div></div>
       <div class="capa-stat"><div class="capa-stat-val">5 anos</div><div class="capa-stat-desc">De operação</div></div>
     </div>
   </div>
@@ -1151,11 +1187,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
     </div>
   </div>
 
-  <!-- SLIDE 3a ENTREGÁVEIS PARTE 1 -->
+  <!-- SLIDE 3a ENTREGÁVEIS PARTE 1 (paginação automática: ver entregPaginar) -->
   <div class="slide" id="slide-3" data-sid="3">
     <div class="slide-header">
-      <div class="slide-tag">Escopo de Entregas — 1/2</div>
-      <div class="slide-title">O que está <span>incluído:</span></div>
+      <div class="slide-tag">Sucesso do Cliente</div>
+      <div class="slide-title">Escopo de <span>Entregas:</span></div>
       <div class="slide-subtitle">Tudo que será entregue ao longo do projeto</div>
     </div>
     <div class="entregaveis-box" id="s3-entregaveis">—</div>
@@ -1164,11 +1200,21 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
   <!-- SLIDE 3b ENTREGÁVEIS PARTE 2 -->
   <div class="slide" id="slide-3b" data-sid="3b">
     <div class="slide-header">
-      <div class="slide-tag">Escopo de Entregas — 2/2</div>
-      <div class="slide-title">O que está <span>incluído:</span></div>
+      <div class="slide-tag">Sucesso do Cliente</div>
+      <div class="slide-title">Escopo de <span>Entregas:</span></div>
       <div class="slide-subtitle">Continuação dos entregáveis do projeto</div>
     </div>
     <div class="entregaveis-box" id="s3b-entregaveis">—</div>
+  </div>
+
+  <!-- SLIDE 3c ENTREGÁVEIS PARTE 3 (só usado se o conteúdo não couber em 2 slides) -->
+  <div class="slide" id="slide-3c" data-sid="3c">
+    <div class="slide-header">
+      <div class="slide-tag">Sucesso do Cliente</div>
+      <div class="slide-title">Escopo de <span>Entregas:</span></div>
+      <div class="slide-subtitle">Continuação dos entregáveis do projeto</div>
+    </div>
+    <div class="entregaveis-box" id="s3c-entregaveis">—</div>
   </div>
 
   <!-- SLIDE 4 CRONOGRAMA -->
@@ -1176,7 +1222,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;mix-
     <div class="slide-header">
       <div class="slide-tag">Cronograma</div>
       <div class="slide-title">Como vamos <span>executar:</span></div>
-      <div class="slide-subtitle">Semana a semana, do onboarding à escala</div>
+      <div class="slide-subtitle">Etapa por etapa, do onboarding à escala</div>
     </div>
     <div class="crono-list" id="s4-crono"></div>
   </div>
@@ -1651,11 +1697,6 @@ function buildResolverSlide() {
     el.appendChild(block);
   });
 }
-const ALL_WEEKS=[
-  {id:'w1',label:'Semana 01'},{id:'w2',label:'Semana 02'},{id:'w3',label:'Semana 03'},
-  {id:'w4',label:'Semana 04'},{id:'w5',label:'Semana 05'},{id:'w6',label:'Semana 06'},
-  {id:'w7',label:'Semana 07'},{id:'w8',label:'Semana 08'},
-];
 
 // Modelos de entregáveis
 const MODELOS = {
@@ -1765,57 +1806,391 @@ function getYouTubeId(url){
   return r?r[1]:null;
 }
 
-// Cronograma
-function getActiveWeeks(){
-  const total=parseInt(document.getElementById('cfg-num-semanas').value)||4;
-  return ALL_WEEKS.slice(0,total).filter(w=>{const cb=document.getElementById('wcb-'+w.id);return cb?cb.checked:true;});
+// Cronograma por etapas
+const CRONO_MAX_ETAPAS=12;
+const CRONO_ALTURA_MAX=440; // altura máxima (px) da lista de etapas para caber no slide/PDF
+let cronoEtapas=[];
+let cronoSeq=0;
+let cronoTimerEncaixe=null;
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-function buildCronoConfig(){
-  const total=Math.min(Math.max(parseInt(document.getElementById('cfg-num-semanas').value)||4,1),8);
-  const cbCont=document.getElementById('week-checkboxes');
-  const prevStates={};
-  ALL_WEEKS.forEach(w=>{const cb=document.getElementById('wcb-'+w.id);if(cb)prevStates[w.id]=cb.checked;});
-  cbCont.innerHTML='';
-  ALL_WEEKS.slice(0,total).forEach(w=>{
-    const checked=prevStates[w.id]!==undefined?prevStates[w.id]:true;
-    const lbl=document.createElement('label');
-    lbl.style.cssText='display:flex;align-items:center;gap:5px;cursor:pointer;background:var(--navy-card2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:600;color:var(--gray-2);user-select:none;';
-    lbl.innerHTML=`<input type="checkbox" id="wcb-${w.id}" ${checked?'checked':''} onchange="buildCronoConfig()" style="accent-color:var(--blue-light);width:13px;height:13px;cursor:pointer;"> ${w.label.replace('Semana ','S')}`;
-    cbCont.appendChild(lbl);
+function cronoNovaLinha(txt,bold){return {id:++cronoSeq,txt:txt||'',bold:!!bold};}
+function cronoNovaEtapa(){return {id:++cronoSeq,periodoAtivo:false,inicio:'',fim:'',linhas:[cronoNovaLinha()]};}
+function cronoGet(eid){return cronoEtapas.find(e=>e.id===eid);}
+function cronoRotulo(i){return 'Etapa '+String(i+1).padStart(2,'0');}
+
+// Datas: sempre por string (evita o deslocamento de 1 dia causado por new Date('YYYY-MM-DD') em UTC)
+function cronoDataValida(v){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||'');
+  if(!m)return null;
+  const a=+m[1],me=+m[2],d=+m[3];
+  if(a<1900||a>2100)return null;
+  const dt=new Date(a,me-1,d);
+  if(dt.getFullYear()!==a||dt.getMonth()!==me-1||dt.getDate()!==d)return null;
+  return {key:a*10000+me*100+d,txt:m[3]+'/'+m[2]+'/'+m[1]};
+}
+function cronoPeriodo(e){
+  if(!e.periodoAtivo)return {estado:'off'};
+  const i=cronoDataValida(e.inicio),f=cronoDataValida(e.fim);
+  if(i&&f){
+    if(f.key<i.key)return {estado:'invalido'};
+    if(f.key===i.key)return {estado:'unica',ini:i};
+    return {estado:'intervalo',ini:i,fim:f};
+  }
+  if(i)return {estado:'inicio',ini:i};
+  if(f)return {estado:'fim',fim:f};
+  return {estado:'vazio'};
+}
+function cronoPeriodoHtml(e){
+  const p=cronoPeriodo(e);
+  const sp=t=>'<span>'+escapeHtml(t)+'</span>';
+  switch(p.estado){
+    case 'unica': return '<div class="crono-period">'+sp(p.ini.txt)+'</div>';
+    case 'intervalo': return '<div class="crono-period">'+sp(p.ini.txt)+sp('→ '+p.fim.txt)+'</div>';
+    case 'inicio': return '<div class="crono-period">'+sp('A partir de')+sp(p.ini.txt)+'</div>';
+    case 'fim': return '<div class="crono-period">'+sp('Até')+sp(p.fim.txt)+'</div>';
+    default: return '';
+  }
+}
+
+// Dados que vão para o slide: só etapas com pelo menos uma atividade preenchida
+function getEtapasParaSlide(){
+  const out=[];
+  cronoEtapas.forEach((e,idx)=>{
+    const linhas=e.linhas.map(l=>({txt:l.txt.trim(),bold:l.bold})).filter(l=>l.txt);
+    if(!linhas.length)return;
+    out.push({rotulo:cronoRotulo(idx),periodoHtml:cronoPeriodoHtml(e),linhas:linhas});
   });
-  const c=document.getElementById('crono-cfg');
-  const savedLines={};
-  ALL_WEEKS.forEach(w=>{
-    const cont=document.getElementById('lines-'+w.id);
-    if(cont){savedLines[w.id]=[];cont.querySelectorAll('.crono-line-row').forEach(row=>{savedLines[w.id].push({txt:row.querySelector('input').value,bold:row.querySelector('.crono-bold-btn').classList.contains('on')});});}
+  return out;
+}
+function cronoItensHtml(etapas){
+  return etapas.map(et=>
+    '<div class="crono-item"><div class="crono-week"><div class="crono-week-in"><div class="crono-week-lbl">'+escapeHtml(et.rotulo)+'</div>'+et.periodoHtml+'</div></div>'
+    +'<div class="crono-body">'+et.linhas.map(l=>'<span class="crono-line'+(l.bold?' bold':'')+'">'+escapeHtml(l.txt)+'</span>').join('')+'</div></div>'
+  ).join('');
+}
+// Escolhe a menor densidade (normal → d1 → d2 → d3) em que a lista cabe, medindo o layout real
+function cronoMedirDensidade(etapas){
+  const html=cronoItensHtml(etapas);
+  const probe=document.createElement('div');
+  probe.setAttribute('aria-hidden','true');
+  probe.style.cssText='position:absolute;left:-99999px;top:0;width:996px;visibility:hidden;pointer-events:none;';
+  document.body.appendChild(probe);
+  let level='d3',cabe=false;
+  try{
+    const levels=['','d1','d2','d3'];
+    for(let k=0;k<levels.length;k++){
+      probe.innerHTML='<div class="crono-list'+(levels[k]?' '+levels[k]:'')+'">'+html+'</div>';
+      if(probe.firstChild.offsetHeight<=CRONO_ALTURA_MAX){level=levels[k];cabe=true;break;}
+    }
+  }finally{probe.remove();}
+  return {level:level,cabe:cabe};
+}
+function cronoRenderSlide(){
+  const el=document.getElementById('s4-crono');
+  const etapas=getEtapasParaSlide();
+  const d=cronoMedirDensidade(etapas);
+  el.className='crono-list'+(d.level?' '+d.level:'');
+  el.innerHTML=cronoItensHtml(etapas);
+}
+
+// ----- Configuração -----
+function cronoLinhaHtml(eid,l){
+  return '<div class="crono-line-row" data-lid="'+l.id+'">'
+    +'<input class="crono-line-input" type="text" placeholder="Atividade..." aria-label="Atividade" value="'+escapeHtml(l.txt)+'" oninput="cronoSetTxt('+eid+','+l.id+',this.value)">'
+    +'<button type="button" class="crono-bold-btn'+(l.bold?' on':'')+'" title="Negrito" onclick="cronoToggleBold('+eid+','+l.id+',this)">N</button>'
+    +'<button type="button" class="crono-rm-btn" title="Remover linha" onclick="cronoRemoverLinha('+eid+','+l.id+')">✕</button></div>';
+}
+function cronoCriarBloco(e,idx){
+  const id=e.id;
+  const blk=document.createElement('div');
+  blk.className='crono-cfg-block';
+  blk.setAttribute('data-eid',id);
+  blk.innerHTML=
+    '<div class="crono-cfg-head"><div class="crono-cfg-wlabel" id="crono-lbl-'+id+'">'+cronoRotulo(idx)+'</div>'
+    +'<button type="button" class="crono-stage-rm" title="Remover etapa" onclick="cronoRemoverEtapa('+id+')">✕ Remover etapa</button></div>'
+    +'<label class="crono-per-tog" for="crono-per-'+id+'"><input type="checkbox" id="crono-per-'+id+'"'+(e.periodoAtivo?' checked':'')+' onchange="cronoTogglePeriodo('+id+',this.checked)"> Informar período</label>'
+    +'<div class="crono-per-fields" id="crono-perf-'+id+'"'+(e.periodoAtivo?'':' hidden')+'>'
+      +'<div class="field"><label for="crono-ini-'+id+'">Início</label><input type="date" id="crono-ini-'+id+'" data-campo="inicio" value="'+escapeHtml(e.inicio)+'" oninput="cronoSetData('+id+',this.dataset.campo,this.value)" onchange="cronoSetData('+id+',this.dataset.campo,this.value)"></div>'
+      +'<div class="field"><label for="crono-fim-'+id+'">Fim</label><input type="date" id="crono-fim-'+id+'" data-campo="fim" value="'+escapeHtml(e.fim)+'" oninput="cronoSetData('+id+',this.dataset.campo,this.value)" onchange="cronoSetData('+id+',this.dataset.campo,this.value)"></div>'
+      +'<div class="crono-per-warn" id="crono-warn-'+id+'" role="alert" hidden>A data de fim é anterior à data de início — o período não será exibido no slide.</div>'
+    +'</div>'
+    +'<div class="crono-lines" id="crono-lines-'+id+'">'+e.linhas.map(l=>cronoLinhaHtml(id,l)).join('')+'</div>'
+    +'<button type="button" class="btn-addline" onclick="cronoAddLinha('+id+')">+ Adicionar linha</button>';
+  return blk;
+}
+function cronoAtualizarControles(){
+  cronoEtapas.forEach((e,idx)=>{
+    const lbl=document.getElementById('crono-lbl-'+e.id);
+    if(lbl)lbl.textContent=cronoRotulo(idx);
   });
-  c.innerHTML='';
-  ALL_WEEKS.slice(0,total).filter(w=>{const cb=document.getElementById('wcb-'+w.id);return cb?cb.checked:true;}).forEach(w=>{
-    const block=document.createElement('div');block.className='crono-cfg-block';
-    block.innerHTML=`<div class="crono-cfg-wlabel">${w.label}:</div><div class="crono-lines" id="lines-${w.id}"></div><button class="btn-addline" onclick="addLine('${w.id}')">+ Adicionar linha</button>`;
-    c.appendChild(block);
-    if(savedLines[w.id]&&savedLines[w.id].some(l=>l.txt))savedLines[w.id].forEach(l=>addLineWithValue(w.id,l.txt,l.bold));
-    else addLine(w.id);
+  const so1=cronoEtapas.length<=1;
+  document.querySelectorAll('#crono-cfg .crono-stage-rm').forEach(b=>{b.disabled=so1;});
+  const add=document.getElementById('crono-add-etapa');
+  if(add){
+    const cheio=cronoEtapas.length>=CRONO_MAX_ETAPAS;
+    add.disabled=cheio;
+    add.textContent=cheio?'Limite de '+CRONO_MAX_ETAPAS+' etapas atingido':'+ Adicionar etapa';
+  }
+}
+function cronoAgendarEncaixe(){
+  clearTimeout(cronoTimerEncaixe);
+  cronoTimerEncaixe=setTimeout(cronoVerificarEncaixe,250);
+}
+function cronoVerificarEncaixe(){
+  const w=document.getElementById('crono-fit-warn');
+  if(!w)return;
+  w.hidden=cronoMedirDensidade(getEtapasParaSlide()).cabe;
+}
+function cronoValidarUI(eid){
+  const e=cronoGet(eid);
+  if(!e)return;
+  const inval=cronoPeriodo(e).estado==='invalido';
+  const w=document.getElementById('crono-warn-'+eid);
+  if(w)w.hidden=!inval;
+  ['ini','fim'].forEach(k=>{
+    const inp=document.getElementById('crono-'+k+'-'+eid);
+    if(inp){if(inval)inp.setAttribute('aria-invalid','true');else inp.removeAttribute('aria-invalid');}
   });
 }
-function addLine(wid){
-  const cont=document.getElementById('lines-'+wid);
-  const row=document.createElement('div');row.className='crono-line-row';
-  row.innerHTML=`<input class="crono-line-input" type="text" placeholder="Atividade..."><button class="crono-bold-btn" onclick="toggleLineBold(this)">N</button><button class="crono-rm-btn" onclick="removeLine(this)">✕</button>`;
-  cont.appendChild(row);
+function cronoAddEtapa(){
+  if(cronoEtapas.length>=CRONO_MAX_ETAPAS)return;
+  const e=cronoNovaEtapa();
+  cronoEtapas.push(e);
+  document.getElementById('crono-cfg').appendChild(cronoCriarBloco(e,cronoEtapas.length-1));
+  cronoAtualizarControles();
+  cronoAgendarEncaixe();
+  const inp=document.querySelector('#crono-lines-'+e.id+' input');
+  if(inp)inp.focus();
 }
-function addLineWithValue(wid,txt,bold){
-  const cont=document.getElementById('lines-'+wid);
-  const row=document.createElement('div');row.className='crono-line-row';
-  row.innerHTML=`<input class="crono-line-input" type="text" value="${txt.replace(/"/g,'&quot;')}"><button class="crono-bold-btn${bold?' on':''}" onclick="toggleLineBold(this)">N</button><button class="crono-rm-btn" onclick="removeLine(this)">✕</button>`;
-  cont.appendChild(row);
+function cronoRemoverEtapa(eid){
+  if(cronoEtapas.length<=1)return;
+  const e=cronoGet(eid);
+  if(!e)return;
+  const temConteudo=e.linhas.some(l=>l.txt.trim())||(e.periodoAtivo&&(e.inicio||e.fim));
+  if(temConteudo&&!window.confirm('Remover esta etapa e todo o conteúdo dela?'))return;
+  cronoEtapas=cronoEtapas.filter(x=>x.id!==eid);
+  const blk=document.querySelector('#crono-cfg .crono-cfg-block[data-eid="'+eid+'"]');
+  if(blk)blk.remove();
+  cronoAtualizarControles();
+  cronoAgendarEncaixe();
 }
-function removeLine(btn){
-  const row=btn.closest('.crono-line-row');const cont=row.parentElement;
-  if(cont.querySelectorAll('.crono-line-row').length>1)row.remove();
-  else row.querySelector('input').value='';
+function cronoTogglePeriodo(eid,on){
+  const e=cronoGet(eid);
+  if(!e)return;
+  e.periodoAtivo=!!on;
+  const f=document.getElementById('crono-perf-'+eid);
+  if(f)f.hidden=!on;
+  cronoValidarUI(eid);
+  cronoAgendarEncaixe();
 }
-function toggleLineBold(btn){btn.classList.toggle('on');}
+function cronoSetData(eid,campo,v){
+  const e=cronoGet(eid);
+  if(!e||(campo!=='inicio'&&campo!=='fim'))return;
+  e[campo]=v||'';
+  cronoValidarUI(eid);
+  cronoAgendarEncaixe();
+}
+function cronoSetTxt(eid,lid,v){
+  const e=cronoGet(eid);
+  if(!e)return;
+  const l=e.linhas.find(x=>x.id===lid);
+  if(l)l.txt=v;
+  cronoAgendarEncaixe();
+}
+function cronoToggleBold(eid,lid,btn){
+  const e=cronoGet(eid);
+  if(!e)return;
+  const l=e.linhas.find(x=>x.id===lid);
+  if(!l)return;
+  l.bold=!l.bold;
+  btn.classList.toggle('on',l.bold);
+  cronoAgendarEncaixe();
+}
+function cronoAddLinha(eid){
+  const e=cronoGet(eid);
+  if(!e)return;
+  const l=cronoNovaLinha();
+  e.linhas.push(l);
+  const cont=document.getElementById('crono-lines-'+eid);
+  cont.insertAdjacentHTML('beforeend',cronoLinhaHtml(eid,l));
+  const inp=cont.lastElementChild.querySelector('input');
+  if(inp)inp.focus();
+  cronoAgendarEncaixe();
+}
+function cronoRemoverLinha(eid,lid){
+  const e=cronoGet(eid);
+  if(!e)return;
+  const row=document.querySelector('#crono-lines-'+eid+' .crono-line-row[data-lid="'+lid+'"]');
+  if(e.linhas.length>1){
+    e.linhas=e.linhas.filter(x=>x.id!==lid);
+    if(row)row.remove();
+  }else{
+    e.linhas[0].txt='';
+    if(row)row.querySelector('input').value='';
+  }
+  cronoAgendarEncaixe();
+}
+function cronoInit(){
+  cronoEtapas=[cronoNovaEtapa(),cronoNovaEtapa(),cronoNovaEtapa()];
+  const cont=document.getElementById('crono-cfg');
+  cont.innerHTML='';
+  cronoEtapas.forEach((e,i)=>cont.appendChild(cronoCriarBloco(e,i)));
+  cronoAtualizarControles();
+}
+
+// Entregáveis — paginação automática (1 a 3 slides, conforme o volume de conteúdo)
+const ENTREG_REMOVER='script,style,iframe,object,embed,link,meta,base,frame,frameset,applet,noscript,template';
+const ENTREG_BLOCOS=['DIV','P','UL','OL','LI','DL','H1','H2','H3','H4','H5','H6','BLOCKQUOTE','PRE','TABLE','HR','SECTION','ARTICLE','ASIDE','HEADER','FOOTER','FIGURE','FORM','FIELDSET','ADDRESS','MAIN','NAV'];
+const ENTREG_ESPACADOR='<div><br></div>';
+const ENTREG_MARGEM=8; // folga de segurança (px), caso as fontes carreguem depois
+let entregTimer=null;
+
+function isSlideAtivo(sid){return activeSlides.some(a=>String(a)===String(sid));}
+
+function entregLimparElemento(el){
+  el.querySelectorAll(ENTREG_REMOVER).forEach(x=>x.remove());
+  [el].concat(Array.from(el.querySelectorAll('*'))).forEach(n=>{
+    Array.from(n.attributes).forEach(a=>{
+      const nome=a.name.toLowerCase();
+      if(nome.indexOf('on')===0){n.removeAttribute(a.name);return;}
+      if(['href','src','xlink:href','action','formaction','srcset','data'].indexOf(nome)!==-1
+         && /^(javascript|vbscript):/i.test(a.value.replace(/[\u0000-\u0020]/g,''))){n.removeAttribute(a.name);}
+    });
+  });
+  return el;
+}
+function entregHtmlDoNo(node){
+  if(node.nodeType===3)return escapeHtml(node.nodeValue);
+  if(node.nodeType!==1)return '';
+  if(node.matches(ENTREG_REMOVER))return '';
+  return entregLimparElemento(node.cloneNode(true)).outerHTML;
+}
+function entregSemConteudo(node){
+  if(node.querySelector&&node.querySelector('img,video,audio,svg,canvas,hr,table,iframe'))return false;
+  return !(node.textContent||'').replace(/[\s\u00A0\u200B]/g,'');
+}
+// Quebra o conteúdo do editor em "unidades" indivisíveis: um bloco, ou uma linha de nós inline
+function entregUnidades(){
+  const ed=document.getElementById('cfg-entregaveis');
+  const us=[];
+  let buf=[],bufTemConteudo=false;
+  const fecharLinha=(terminadaPorBr)=>{
+    if(buf.length&&bufTemConteudo)us.push({html:'<div>'+buf.join('')+'</div>',spacer:false});
+    else if(terminadaPorBr)us.push({html:ENTREG_ESPACADOR,spacer:true});
+    buf=[];bufTemConteudo=false;
+  };
+  Array.from(ed.childNodes).forEach(n=>{
+    if(n.nodeType===3){
+      if(!buf.length&&!n.nodeValue.trim())return;
+      buf.push(escapeHtml(n.nodeValue));
+      if(n.nodeValue.replace(/[\s\u00A0\u200B]/g,''))bufTemConteudo=true;
+    }else if(n.nodeType===1){
+      if(n.tagName==='BR'){fecharLinha(true);return;}
+      if(n.matches(ENTREG_REMOVER))return;
+      if(ENTREG_BLOCOS.indexOf(n.tagName)!==-1){
+        fecharLinha(false);
+        if(entregSemConteudo(n))us.push({html:ENTREG_ESPACADOR,spacer:true});
+        else us.push({html:entregHtmlDoNo(n),spacer:false});
+      }else{
+        buf.push(entregHtmlDoNo(n));
+        if(!entregSemConteudo(n))bufTemConteudo=true;
+      }
+    }
+  });
+  fecharLinha(false);
+  return us;
+}
+function entregAparar(us){
+  let a=0,b=us.length;
+  while(a<b&&us[a].spacer)a++;
+  while(b>a&&us[b-1].spacer)b--;
+  return us.slice(a,b);
+}
+// Sonda fora da tela com a MESMA geometria do PDF (1100x720, padding 70/52/52)
+function entregCriarSonda(){
+  const hdr=document.querySelector('#slide-3 .slide-header').cloneNode(true);
+  const t=hdr.querySelector('.slide-title');
+  if(t)t.style.fontSize='44px'; // clamp(28px,4vw,48px) com janela de 1100px, como no PDF
+  const probe=document.createElement('div');
+  probe.setAttribute('aria-hidden','true');
+  probe.style.cssText='position:absolute;left:-99999px;top:0;width:1100px;height:720px;padding:70px 52px 52px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;visibility:hidden;pointer-events:none;';
+  const box=document.createElement('div');
+  box.className='entregaveis-box';
+  box.style.flexShrink='0'; // sem isso o box (overflow:hidden) encolhe e a medição dá falso "cabe"
+  probe.appendChild(hdr);probe.appendChild(box);
+  document.body.appendChild(probe);
+  return {probe:probe,box:box};
+}
+function entregPaginar(){
+  const todos=entregAparar(entregUnidades());
+  if(!todos.length)return {paginas:[''],overflow:false};
+  const S=entregCriarSonda();
+  try{
+    const avail=720-52-(S.box.getBoundingClientRect().top-S.probe.getBoundingClientRect().top)-ENTREG_MARGEM;
+    const html=us=>us.map(u=>u.html).join('');
+    const alt=us=>{S.box.innerHTML=html(us)||'—';return S.box.getBoundingClientRect().height;};
+    const cabe=us=>alt(us)<=avail;
+    const n=todos.length;
+    const fatia=(a,b)=>entregAparar(todos.slice(a,b));
+    if(cabe(todos))return {paginas:[html(todos)],overflow:false};
+
+    // maior "fim" (exclusivo) tal que fatia(ini,fim) cabe; no mínimo ini+1 (garante progresso)
+    const prefixo=ini=>{
+      let lo=ini+1,hi=n;
+      while(lo<hi){const mid=Math.ceil((lo+hi)/2);if(cabe(fatia(ini,mid)))lo=mid;else hi=mid-1;}
+      return lo;
+    };
+    // 2 páginas: entre os cortes válidos, o que minimiza a altura da página mais alta
+    const kmax=prefixo(0);
+    let kmin=-1;
+    if(n>=2&&cabe(fatia(n-1,n))){
+      let lo=1,hi=n-1;
+      while(lo<hi){const mid=Math.floor((lo+hi)/2);if(cabe(fatia(mid,n)))hi=mid;else lo=mid+1;}
+      kmin=lo;
+    }
+    if(kmin>=1&&kmin<=Math.min(kmax,n-1)){
+      let melhor=null;
+      for(let k=kmin;k<=Math.min(kmax,n-1);k++){
+        const hL=alt(fatia(0,k)),hR=alt(fatia(k,n));
+        if(hL<=avail&&hR<=avail){const c=Math.max(hL,hR);if(!melhor||c<melhor.c)melhor={k:k,c:c};}
+      }
+      if(melhor)return {paginas:[html(fatia(0,melhor.k)),html(fatia(melhor.k,n))],overflow:false};
+    }
+    // 3 páginas (máximo): preenche a 1ª e a 2ª; o resto vai para a 3ª
+    const e1=prefixo(0);
+    if(e1>=n)return {paginas:[html(fatia(0,n))],overflow:!cabe(fatia(0,n))};
+    const e2=prefixo(e1);
+    const paginas=[fatia(0,e1),fatia(e1,e2)];
+    let overflow=!cabe(paginas[0])||!cabe(paginas[1]);
+    if(e2<n){const r=fatia(e2,n);paginas.push(r);if(!cabe(r))overflow=true;}
+    return {paginas:paginas.filter(p=>p.length).map(html),overflow:overflow};
+  }finally{S.probe.remove();}
+}
+function entregAplicar(){
+  const r=entregPaginar();
+  ['s3-entregaveis','s3b-entregaveis','s3c-entregaveis'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=r.paginas[i]||'—';
+  });
+  return r;
+}
+function entregAtualizarAviso(r){
+  const w=document.getElementById('entreg-fit-warn');
+  if(!w)return;
+  w.hidden=!(r||entregPaginar()).overflow;
+}
+function entregAgendarAviso(){
+  clearTimeout(entregTimer);
+  entregTimer=setTimeout(function(){entregAtualizarAviso();},250);
+}
+function entregInit(){
+  const ed=document.getElementById('cfg-entregaveis');
+  new MutationObserver(entregAgendarAviso).observe(ed,{childList:true,subtree:true,characterData:true,attributes:true});
+  entregAgendarAviso();
+}
 
 // Toggles
 function refreshToggles(){
@@ -1921,55 +2296,34 @@ function launchPresentation(){
   document.querySelectorAll('.slide').forEach(s=>{
     const sid=s.dataset.sid;
     s.classList.remove('active');
-    s.style.display=activeSlides.includes(sid)||activeSlides.includes(parseInt(sid))?'':'none';
+    s.style.display=isSlideAtivo(sid)?'':'none';
   });
 
   currentSid=1;
   document.getElementById('slide-1').classList.add('active');
+
+  document.getElementById('nav-client-name').textContent=cliente;
+  document.getElementById('s1-cliente').textContent=cliente;
+  // Entregáveis — paginação automática: só usa 2ª/3ª tela se o conteúdo não couber em uma
+  const ent=entregAplicar();
+  if(document.getElementById('tog-3').checked){
+    const idx3=activeSlides.indexOf(3);
+    if(idx3!==-1){
+      const extras=['3b','3c'].slice(0,Math.max(0,ent.paginas.length-1));
+      activeSlides.splice(idx3+1,0,...extras);
+    }
+  }
+  ['3b','3c'].forEach(sid=>{
+    const sl=document.getElementById('slide-'+sid);
+    if(sl)sl.style.display=isSlideAtivo(sid)?'':'none';
+  });
+  entregAtualizarAviso(ent);
+
   document.getElementById('nav-steps').innerHTML=activeSlides.map((sid,i)=>
     `<div class="nav-step ${i===0?'active':''}" onclick="goToSid('${sid}')">${i+1}</div>`
   ).join('');
 
-  document.getElementById('nav-client-name').textContent=cliente;
-  document.getElementById('s1-cliente').textContent=cliente;
-  // Entregáveis — divide o conteúdo em 2 slides
-  const cfgEntregaveis = document.getElementById('cfg-entregaveis');
-  const allChildren = Array.from(cfgEntregaveis.childNodes);
-
-  // Divide os nós em 2 metades aproximadamente iguais por número de elementos-bloco
-  const blockNodes = allChildren.filter(n => n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim()));
-  const half = Math.ceil(blockNodes.length / 2);
-  const part1 = blockNodes.slice(0, half);
-  const part2 = blockNodes.slice(half);
-
-  const box1 = document.getElementById('s3-entregaveis');
-  const box2 = document.getElementById('s3b-entregaveis');
-  box1.innerHTML = part1.map(n => n.outerHTML || n.textContent).join('') || '—';
-  box2.innerHTML = part2.map(n => n.outerHTML || n.textContent).join('') || '—';
-
-  // Adiciona 3b aos slides ativos se 3 estiver ativo
-  if(document.getElementById('tog-3').checked){
-    const idx3 = activeSlides.indexOf(3);
-    if(idx3 !== -1) activeSlides.splice(idx3+1, 0, '3b');
-  }
-
-  // Garantir que slide-3b seja visível se ativo
-  const slide3b = document.getElementById('slide-3b');
-  if(slide3b) slide3b.style.display = activeSlides.includes('3b') ? '' : 'none';
-
-  const cronoEl=document.getElementById('s4-crono');
-  cronoEl.innerHTML='';
-  getActiveWeeks().forEach(w=>{
-    const rows=document.querySelectorAll('#lines-'+w.id+' .crono-line-row');
-    const lines=[];
-    rows.forEach(row=>{
-      const txt=row.querySelector('input').value.trim();
-      const bold=row.querySelector('.crono-bold-btn').classList.contains('on');
-      if(txt)lines.push({txt,bold});
-    });
-    if(!lines.length)return;
-    cronoEl.innerHTML+='<div class="crono-item"><div class="crono-week"><div class="crono-week-lbl">'+w.label+'</div></div><div class="crono-body">'+lines.map(l=>'<span class="crono-line'+(l.bold?' bold':'')+'">'+l.txt+'</span>').join('')+'</div></div>';
-  });
+  cronoRenderSlide();
 
   document.getElementById('s8-valor').textContent=valor>0?fmt(valor):'—';
   document.getElementById('s8-prazo').textContent=prazoLabel(prazo,prazoUnit);
@@ -1990,6 +2344,9 @@ function launchPresentation(){
 
 // Inicializa o quiz quando o slide 11 fica ativo
 function goToSid(sid){
+  const alvo=activeSlides.find(s=>String(s)===String(sid));
+  if(alvo===undefined)return;
+  sid=alvo;
   const current = document.getElementById('slide-'+currentSid);
   current.style.opacity='0';
   current.style.transform='translateY(-10px)';
@@ -2142,7 +2499,7 @@ async function downloadPDF(){
   slidesToExport.forEach(s=>{s.style.cssText='';});
   document.querySelectorAll('.slide').forEach(s=>{
     const sid=s.dataset.sid;
-    s.style.display=(activeSlides.includes(sid)||activeSlides.includes(parseInt(sid)))?'':'none';
+    s.style.display=isSlideAtivo(sid)?'':'none';
     s.classList.toggle('active',sid==savedSid||sid===String(savedSid));
   });
   overlay.classList.remove('show');
@@ -2154,7 +2511,8 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'||e.key==='ArrowUp')prevSlide();
 });
 
-buildCronoConfig();
+cronoInit();
+entregInit();
 buildResolverConfig();
 refreshToggles();
 </script>
