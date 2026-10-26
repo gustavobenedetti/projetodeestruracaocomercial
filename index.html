@@ -955,6 +955,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,[contenteditable]:
 #slide-watermark img{display:none}
 /* títulos em uma cor só: branco */
 .config-header h1 span,.slide-title span,.capa-title span,.nav-logo span{background:none!important;-webkit-text-fill-color:#fff!important;color:#fff!important}
+
+/* capa: título único em dourado */
+.capa-title.capa-title-gold{color:#E3B94F;background-image:linear-gradient(180deg,#FBEBBB 0%,#F1D27F 32%,#E3B94F 55%,#D2A43E 78%,#E8C566 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 </style>
 </head>
 <body>
@@ -1174,7 +1178,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,[contenteditable]:
   <!-- SLIDE 1 CAPA -->
   <div class="slide slide-capa" id="slide-1" data-sid="1">
     <div class="capa-tag">Projeto de Estruturação Comercial</div>
-    <div class="capa-title">Implementação da<br><span>Configuração Comercial</span></div>
+    <div class="capa-title capa-title-gold">Configuração Comercial</div>
     <div class="capa-client">Preparado para <strong id="s1-cliente">—</strong></div>
     <div class="capa-stats">
       <div class="capa-stat"><div class="capa-stat-val">+R$510M</div><div class="capa-stat-desc">Em negócios gerados</div></div>
@@ -2481,6 +2485,7 @@ async function downloadPDF(){
     #slide-watermark{display:none!important;}
     .pres-nav{display:none!important;}
     .bg-sheen{display:none!important;}
+    .capa-title.capa-title-gold{background:none!important;-webkit-text-fill-color:#E3B94F!important;color:#E3B94F!important;}
     .config-header h1 span,.slide-title span,.capa-title span{background:none!important;-webkit-text-fill-color:#fff!important;color:#fff!important;}
   `;
   document.head.appendChild(styleOverride);
