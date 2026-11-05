@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Branches Performance · Proposta Comercial</title>
+<title>Grupo Branches · Proposta Comercial</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-60 -40 600 630%27%3E%3Crect x=%27-60%27 y=%27-40%27 width=%27600%27 height=%27630%27 rx=%27120%27 fill=%27%23021A11%27/%3E%3Cpath d=%27M4 109 L4 55 Q4 3 56 3 L430 3 Q477 3 477 50 L477 451 Q477 498 430 498 L380 498 Q369 498 369 487 L369 181 L4 546 L4 395 L292 109 Z%27 fill=%27%23E3B94F%27/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>/* html2canvas 1.4.1 */
 /*!
@@ -2543,7 +2544,7 @@ async function downloadPDF(){
   const overlay=document.getElementById('pdf-overlay');
   overlay.classList.add('show');
   const {jsPDF}=window.jspdf;
-  const W=1100,H=720;
+  const W=1320,H=864;
   const pdf=new jsPDF({orientation:'landscape',unit:'px',format:[W,H],hotfixes:['px_scaling']});
   const nav=document.querySelector('.pres-nav');
   const cliente=document.getElementById('nav-client-name').textContent||'proposta';
@@ -2570,6 +2571,18 @@ async function downloadPDF(){
     .bg-sheen{display:none!important;}
     .capa-title.capa-title-gold{background:none!important;-webkit-text-fill-color:#E3B94F!important;color:#E3B94F!important;}
     .config-header h1 span,.slide-title span,.capa-title span{background:none!important;-webkit-text-fill-color:#fff!important;color:#fff!important;}
+    .slide-capa .capa-title,.invest-value,.cond-value{background:none!important;-webkit-text-fill-color:#E3B94F!important;color:#E3B94F!important;}
+    .cl-sheen{display:none!important;}
+    .pdf-tight .slide-header{margin-bottom:14px!important}
+    .pdf-tight .slide-title{font-size:30px!important}
+    .pdf-tight .resolver-slide-grid{gap:8px!important}
+    .pdf-tight .resolver-cat-block{margin-bottom:4px!important}
+    .pdf-tight .resolver-pairs{gap:3px!important}
+    .pdf-tight .resolver-pair{gap:6px!important}
+    .pdf-tight .resolver-prob,.pdf-tight .resolver-sol{padding:5px 12px!important;font-size:12px!important;line-height:1.3!important}
+    .pdf-tight .resolver-cat-title{margin-bottom:4px!important;font-size:10px!important}
+    .slide.pdf-page>*{width:100%;max-width:1140px;margin-left:auto!important;margin-right:auto!important;}
+    .slide.pdf-page>.cond-wrapper,.slide.pdf-page>.invest-center{max-width:780px!important;flex:none!important;margin-top:28px!important;}
   `;
   document.head.appendChild(styleOverride);
 
@@ -2617,18 +2630,24 @@ async function downloadPDF(){
 
     // Todos os slides — comportamento normal (3 e 3b têm altura fixa agora)
     {
+      slide.classList.add('pdf-page');
       slide.style.display='flex';
       slide.style.flexDirection='column';
-      slide.style.justifyContent='flex-start';
+      slide.style.justifyContent='center';
       slide.style.width=W+'px';
+      slide.style.maxWidth='none';
+      slide.style.margin='0';
+      slide.style.boxSizing='border-box';
       slide.style.minHeight=H+'px';
       slide.style.height=H+'px';
-      slide.style.padding='70px 52px 52px';
+      slide.style.padding='56px 90px';
       slide.style.overflow='hidden';
+      await new Promise(r=>setTimeout(r,120));
+      if(slide.scrollHeight>H+2){ slide.classList.add('pdf-tight'); slide.style.justifyContent='flex-start'; slide.style.paddingTop='40px'; await new Promise(r=>setTimeout(r,80)); }
       await new Promise(r=>setTimeout(r,150));
       const canvas=await html2canvas(slide,{
-        scale:3, useCORS:true, backgroundColor:'#021A11', logging:false,
-        width:W, height:H, windowWidth:W, windowHeight:H,
+        scale:2.5, useCORS:true, backgroundColor:'#021A11', logging:false,
+        width:W, height:H, windowWidth:W, windowHeight:H, scrollX:0, scrollY:0, x:0, y:0,
         ignoreElements: el => el.classList.contains('blob') || el.classList.contains('bg-sheen') || el.id==='slide-watermark' || el.classList.contains('pres-nav')
       });
       const imgData=canvas.toDataURL('image/jpeg',0.97);
@@ -2654,7 +2673,7 @@ async function downloadPDF(){
     });
   }
 
-  slidesToExport.forEach(s=>{s.style.cssText='';});
+  slidesToExport.forEach(s=>{s.style.cssText='';s.classList.remove('pdf-page','pdf-tight');});
   document.querySelectorAll('.slide').forEach(s=>{
     const sid=s.dataset.sid;
     s.style.display=isSlideAtivo(sid)?'':'none';
