@@ -1016,17 +1016,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,[contenteditable]:
 .invest-value,.cond-value,.ancora-cost-value,#ir-total,#ir-fat-proj,.ir-box .ir-val{font-family:var(--serif)!important;font-weight:700!important;letter-spacing:0!important}
 .invest-value,.cond-value{background:linear-gradient(180deg,#FBEBBB 0%,#F1D27F 34%,#E3B94F 62%,#C9993A 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#E3B94F!important;font-size:clamp(54px,6vw,84px)!important;line-height:1.05!important}
 .ancora-cost-value{color:#F28B82!important;font-size:52px!important}
-/* escopo em cards */
-.gbs-grid{column-count:2;column-gap:16px}
-.gbs-grid.c3{column-count:3}
-.gbs-grid .gbs-card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:16px}
-.entregaveis-box.gbs-done::before,.entregaveis-box.gbs-done::after{display:none!important;content:none!important}
-.gbs-card{padding:20px 22px;border-radius:16px;background:linear-gradient(180deg,#083021 0%,#05261A 100%);border:1px solid rgba(246,222,156,.28);box-shadow:0 14px 34px rgba(0,0,0,.3)}
-.gbs-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-light)}
-.gbs-card ul{list-style:none;display:grid;gap:8px}
-.gbs-card li{display:flex;gap:10px;font-size:14px;line-height:1.4;color:#E1E9E0}
-.gbs-card li::before{content:"";flex:none;width:6px;height:6px;margin-top:7px;border-radius:50%;background:#E3B94F;box-shadow:0 0 0 3px rgba(227,185,79,.15)}
+/* escopo em painel único */
+.gbs-panel{border-radius:18px;background:linear-gradient(180deg,#083021 0%,#05261A 100%);border:1px solid rgba(246,222,156,.3);box-shadow:0 18px 44px rgba(0,0,0,.35);overflow:hidden}
+.gbs-row{display:grid;grid-template-columns:290px 1fr;align-items:center;gap:28px;padding:18px 30px}
+.gbs-row + .gbs-row{border-top:1px solid rgba(246,222,156,.14)}
+.gbs-head{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-light);line-height:1.5}
+.gbs-row ul{list-style:none;display:grid;gap:8px 28px}
+.gbs-row ul.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.gbs-row li{display:flex;gap:10px;font-size:14px;line-height:1.4;color:#E1E9E0}
+.gbs-row li::before{content:"";flex:none;width:6px;height:6px;margin-top:7px;border-radius:50%;background:#E3B94F;box-shadow:0 0 0 3px rgba(227,185,79,.15)}
 .entregaveis-box.gbs-done{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+.entregaveis-box.gbs-done::before,.entregaveis-box.gbs-done::after{display:none!important;content:none!important}
 /* cronograma em linha do tempo */
 #s4-crono{position:relative;gap:14px!important}
 #s4-crono .crono-item{position:relative;display:grid!important;grid-template-columns:40px 110px 1fr!important;align-items:center;gap:0;background:none!important;border:0!important;overflow:visible!important;box-shadow:none!important}
@@ -2717,10 +2717,10 @@ refreshToggles();
     [].slice.call(box.children).forEach(function(d){
       var st=d.querySelector('strong'); var tx=(d.textContent||'').trim();
       if(st&&tx===st.textContent.trim()){cur={t:tx,items:[]};cats.push(cur);}
-      else if(tx){ if(!cur){cur={t:'Entregas',items:[]};cats.push(cur);} cur.items.push(d.innerHTML.replace(/^\s*•\s*/,'').replace(/\s*[;.]\s*$/,'')); }
+      else if(tx){ if(!cur){cur={t:'Entregas',items:[]};cats.push(cur);} cur.items.push(d.innerHTML.replace(/(<br\s*\/?>|&nbsp;|\s)+$/gi,'').replace(/^\s*•\s*/,'').replace(/\s*[;.]+$/,'')); }
     });
     if(!cats.length) return;
-    box.innerHTML='<div class="gbs-grid'+(cats.length>4?' c3':'')+'">'+cats.map(function(c){var U=c.t.toUpperCase();var k=['OFERTA','CANAIS','PROCESSO','TREINAMENTO','RECRUTAMENTO','GESTÃO','GESTAO'].find(function(x){return U.indexOf(x)!==-1});return '<div class="gbs-card"><div class="gbs-head">'+ic(CATI[k]||'target')+'<span>'+c.t+'</span></div><ul>'+c.items.map(function(i){return '<li><span>'+i+'</span></li>'}).join('')+'</ul></div>'}).join('')+'</div>';
+    box.innerHTML='<div class="gbs-panel">'+cats.map(function(c){var U=c.t.toUpperCase();var k=['OFERTA','CANAIS','PROCESSO','TREINAMENTO','RECRUTAMENTO','GESTÃO','GESTAO'].find(function(x){return U.indexOf(x)!==-1});return '<div class="gbs-row"><div class="gbs-head">'+ic(CATI[k]||'target')+'<span>'+c.t+'</span></div><ul class="'+(c.items.length>6?'two':'')+'">'+c.items.map(function(i){return '<li><span>'+i+'</span></li>'}).join('')+'</ul></div>'}).join('')+'</div>';
     box.classList.add('gbs-done');
   }
   function mergeScope(){
